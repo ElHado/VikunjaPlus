@@ -1,0 +1,820 @@
+import 'dart:async';
+
+import 'package:background_downloader/background_downloader.dart'
+    show TaskStatus, FileDownloader;
+import 'package:collection/collection.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
+import 'package:vikunja_app/core/di/network_provider.dart';
+import 'package:vikunja_app/core/di/repository_provider.dart';
+import 'package:vikunja_app/core/utils/priority.dart';
+import 'package:vikunja_app/core/utils/repeat_after_parse.dart';
+import 'package:vikunja_app/core/utils/repeat_after_unit.dart';
+import 'package:vikunja_app/domain/entities/label.dart';
+import 'package:vikunja_app/domain/entities/task.dart';
+import 'package:vikunja_app/domain/entities/task_reminder.dart';
+import 'package:vikunja_app/l10n/gen/app_localizations.dart';
+import 'package:vikunja_app/presentation/manager/task_page_controller.dart';
+import 'package:vikunja_app/presentation/pages/task/edit_description.dart';
+import 'package:vikunja_app/presentation/widgets/date_time_field.dart';
+import 'package:vikunja_app/presentation/widgets/label_widget.dart';
+import 'package:vikunja_app/presentation/widgets/task/color_picker_dialog.dart';
+import 'package:vikunja_app/presentation/widgets/task/task_delete_dialog.dart';
+import 'package:vikunja_app/presentation/widgets/task/task_save_dialog.dart';
+
+class TaskEditPage extends ConsumerStatefulWidget {
+  final Task task;
+
+  TaskEditPage({required this.task}) : super(key: Key(task.toString()));
+
+  @override
+  TaskEditPageState createState() => TaskEditPageState();
+}
+
+class TaskEditPageState extends ConsumerState<TaskEditPage> {
+  final _formKey = GlobalKey<FormState>();
+
+  String? _title, _description;
+  DateTime? _dueDate, _startDate, _endDate;
+  int _repeatAfterValue = 0;
+  RepeatAfterUnit _repeatAfterUnit = RepeatAfterUnit.days;
+  int? _priority;
+  List<TaskReminder>? _reminderDates;
+  List<Label>? _labels;
+  Color? _color;
+
+  // we use this to find the label object after a user taps on the suggestion, because the typeahead only uses strings, not full objects.
+  List<Label>? _suggestedLabels;
+  final _labelTypeAheadController = TextEditingController();
+
+  Timer? _debounce;
+  Completer<Iterable<String>>? _lastCompleter;
+
+  bool changed = false;
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    _reminderDates = List.of(widget.task.reminderDates);
+    _labels = List.of(widget.task.labels);
+
+    _priority = widget.task.priority;
+    _description = widget.task.description;
+    _color = widget.task.color;
+
+    _dueDate = widget.task.dueDate;
+    _startDate = widget.task.startDate;
+    _endDate = widget.task.endDate;
+
+    _repeatAfterValue = getRepeatAfterValueFromDuration(
+      widget.task.repeatAfter,
+    );
+    _repeatAfterUnit = getRepeatAfterTypeFromDuration(widget.task.repeatAfter);
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    _labelTypeAheadController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext ctx) {
+    return PopScope(
+      canPop: !changed,
+      onPopInvokedWithResult: (bool didPop, dynamic result) {
+        if (!didPop) {
+          _showConfirmationDialog();
+        }
+      },
+      child: Scaffold(
+        appBar: _buildAppBar(),
+        body: Stack(
+          children: [
+            _buildForm(context),
+            if (_isLoading)
+              const Opacity(
+                opacity: 0.5,
+                child: ModalBarrier(dismissible: false, color: Colors.black),
+              ),
+            if (_isLoading) const Center(child: CircularProgressIndicator()),
+          ],
+        ),
+        floatingActionButton: _isLoading
+            ? null
+            : FloatingActionButton(
+                onPressed: () {
+                  if (_formKey.currentState?.validate() == true) {
+                    _saveTask(ctx);
+                  }
+                },
+                child: Icon(Icons.save),
+              ),
+      ),
+    );
+  }
+
+  AppBar _buildAppBar() {
+    return AppBar(
+      title: Text(AppLocalizations.of(context).editTaskTitle),
+      actions: [
+        IconButton(
+          icon: Icon(Icons.delete),
+          onPressed: _isLoading ? null : showDeleteConfirmDialog,
+        ),
+      ],
+    );
+  }
+
+  void showDeleteConfirmDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return TaskDeleteDialog(
+          widget.task.id,
+          onConfirm: () async {
+            var success = await ref
+                .read(taskPageControllerProvider.notifier)
+                .deleteTask(widget.task.id);
+
+            if (context.mounted) {
+              if (success) {
+                Navigator.of(context).pop();
+                Navigator.of(context).pop(widget.task);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(AppLocalizations.of(context).taskDeleteError),
+                  ),
+                );
+              }
+            }
+          },
+          onCancel: () {
+            Navigator.of(context).pop();
+          },
+        );
+      },
+    );
+  }
+
+  Form _buildForm(BuildContext context) {
+    return Form(
+      key: _formKey,
+      child: ListView(
+        padding: EdgeInsets.fromLTRB(16, 16, 16, 50),
+        children: <Widget>[
+          _buildTitle(),
+          _buildDescription(context),
+          _buildDueDate(),
+          _buildStartDate(),
+          _buildEndDate(),
+          _buildRepeatAfter(),
+          _buildReminderList(),
+          _buildAddReminderButton(context),
+          _buildPriority(),
+          _buildAddLabel(context),
+          _buildLabelList(),
+          _buildColor(),
+          _buildAttachments(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTitle() {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 8.0),
+      child: TextFormField(
+        maxLines: null,
+        keyboardType: TextInputType.multiline,
+        initialValue: widget.task.title,
+        onChanged: (title) {
+          _title = title;
+          _checkChanged();
+        },
+        decoration: InputDecoration(
+          labelText: AppLocalizations.of(context).title,
+          border: OutlineInputBorder(),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDescription(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 8.0),
+      child: InkWell(
+        onTap: () async {
+          var description = await Navigator.push<String>(
+            context,
+            MaterialPageRoute(
+              builder: (buildContext) =>
+                  EditDescription(initialText: _description),
+            ),
+          );
+          setState(() {
+            if (description != null) {
+              _description = description;
+              _checkChanged();
+            }
+          });
+        },
+        child: Row(
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Icon(Icons.description_outlined),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      AppLocalizations.of(context).description,
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        color: Theme.of(context).hintColor,
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                    HtmlWidget(
+                      _description != null && _description?.isNotEmpty == true
+                          ? _description!
+                          : AppLocalizations.of(context).noDescription,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDueDate() {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 8.0),
+      child: VikunjaDateTimeField(
+        icon: Icon(Icons.access_time),
+        label: AppLocalizations.of(context).dueDateLabel,
+        initialValue: widget.task.dueDate,
+        onChanged: (duedate) {
+          _dueDate = duedate;
+          _checkChanged();
+        },
+      ),
+    );
+  }
+
+  Widget _buildStartDate() {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 8.0),
+      child: VikunjaDateTimeField(
+        label: AppLocalizations.of(context).startDateLabel,
+        initialValue: widget.task.startDate,
+        onChanged: (startDate) {
+          _startDate = startDate;
+          _checkChanged();
+        },
+      ),
+    );
+  }
+
+  Widget _buildEndDate() {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 8.0),
+      child: VikunjaDateTimeField(
+        label: AppLocalizations.of(context).endDateLabel,
+        initialValue: widget.task.endDate,
+        onChanged: (endDate) {
+          _endDate = endDate;
+          _checkChanged();
+        },
+      ),
+    );
+  }
+
+  Widget _buildRepeatAfter() {
+    var localizations = AppLocalizations.of(context);
+
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        children: [
+          Flexible(
+            flex: 65,
+            child: TextFormField(
+              keyboardType: TextInputType.number,
+              initialValue: getRepeatAfterValueFromDuration(
+                widget.task.repeatAfter,
+              ).toString(),
+              onChanged: (newValue) {
+                _repeatAfterValue = int.tryParse(newValue) ?? 0;
+                _checkChanged();
+              },
+              decoration: InputDecoration(
+                labelText: localizations.repeatAfter,
+                border: InputBorder.none,
+                icon: Icon(Icons.repeat),
+                contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+              ),
+            ),
+          ),
+          Spacer(),
+          Flexible(
+            flex: 30,
+            child: DropdownButtonFormField<RepeatAfterUnit>(
+              decoration: InputDecoration(
+                border: InputBorder.none,
+                contentPadding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+              ),
+              isExpanded: true,
+              initialValue: _repeatAfterUnit,
+              onChanged: (RepeatAfterUnit? newType) {
+                if (newType != null) {
+                  _repeatAfterUnit = newType;
+                }
+                _checkChanged();
+              },
+              items: RepeatAfterUnit.values
+                  .map<DropdownMenuItem<RepeatAfterUnit>>((
+                    RepeatAfterUnit value,
+                  ) {
+                    return DropdownMenuItem<RepeatAfterUnit>(
+                      value: value,
+                      child: Text(value.toLocalizedString(context)),
+                    );
+                  })
+                  .toList(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildReminderList() {
+    return Padding(
+      padding: EdgeInsets.only(top: 8.0),
+      child: Column(
+        children:
+            _reminderDates?.map((e) {
+              return VikunjaDateTimeField(
+                label: AppLocalizations.of(context).reminder,
+                initialValue: e.reminder,
+                onChanged: (date) {
+                  if (date != null) {
+                    e.reminder = date;
+                  } else {
+                    _reminderDates?.remove(e);
+                  }
+                },
+              );
+            }).toList() ??
+            [],
+      ),
+    );
+  }
+
+  Widget _buildAddReminderButton(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: GestureDetector(
+        child: Row(
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.only(right: 16),
+              child: Icon(Icons.alarm_add, color: Colors.grey),
+            ),
+            Text(
+              AppLocalizations.of(context).addReminder,
+              style: TextStyle(color: Colors.grey, fontSize: 16),
+            ),
+          ],
+        ),
+        onTap: () => _addNewReminder(context),
+      ),
+    );
+  }
+
+  Widget _buildPriority() {
+    return DropdownButtonFormField<String>(
+      decoration: InputDecoration(
+        icon: const Icon(Icons.flag),
+        labelText: AppLocalizations.of(context).priority,
+        border: InputBorder.none,
+      ),
+      initialValue: priorityToString(AppLocalizations.of(context), _priority),
+      isExpanded: true,
+      onChanged: (String? newValue) {
+        _priority = priorityFromString(AppLocalizations.of(context), newValue);
+        _checkChanged();
+      },
+      items:
+          [
+            AppLocalizations.of(context).priorityUnset,
+            AppLocalizations.of(context).priorityLow,
+            AppLocalizations.of(context).priorityMedium,
+            AppLocalizations.of(context).priorityHigh,
+            AppLocalizations.of(context).priorityUrgent,
+            AppLocalizations.of(context).priorityDoNow,
+          ].map((String value) {
+            return DropdownMenuItem(value: value, child: Text(value));
+          }).toList(),
+    );
+  }
+
+  Widget _buildAddLabel(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(right: 15, left: 2),
+            child: Icon(Icons.label, color: Colors.grey),
+          ),
+          SizedBox(
+            width:
+                MediaQuery.of(context).size.width -
+                80 -
+                ((IconTheme.of(context).size ?? 0) * 2),
+            child: Autocomplete<String>(
+              optionsBuilder: (TextEditingValue textEditingValue) {
+                if (textEditingValue.text == '') {
+                  return const Iterable<String>.empty();
+                }
+
+                if (_debounce?.isActive ?? false) {
+                  _debounce!.cancel();
+                  _lastCompleter?.complete(const Iterable<String>.empty());
+                }
+
+                final completer = Completer<Iterable<String>>();
+                _lastCompleter = completer;
+
+                _debounce = Timer(const Duration(milliseconds: 500), () async {
+                  var labels = await _searchLabel(textEditingValue.text);
+                  if (!completer.isCompleted) {
+                    completer.complete(labels);
+                  }
+                });
+
+                return completer.future;
+              },
+              focusNode: FocusNode(),
+              textEditingController: _labelTypeAheadController,
+              onSelected: (String selection) {
+                _addLabel(selection);
+              },
+            ),
+          ),
+          IconButton(
+            onPressed: () => _createAndAddLabel(_labelTypeAheadController.text),
+            icon: Icon(Icons.add),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildColor() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: Row(
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(right: 15, left: 2),
+            child: Icon(Icons.palette, color: Colors.grey),
+          ),
+          ElevatedButton(
+            style: (_color == null || _color == Colors.black)
+                ? null
+                : ButtonStyle(
+                    backgroundColor: WidgetStateProperty.resolveWith(
+                      (_) => _color,
+                    ),
+                  ),
+            onPressed: _onColorEdit,
+            child: Text(
+              AppLocalizations.of(context).setColor,
+              style: (_color == null || _color == Colors.black)
+                  ? null
+                  : TextStyle(
+                      color: (_color)!.computeLuminance() > 0.5
+                          ? Colors.black
+                          : Colors.white,
+                    ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 15),
+            child: () {
+              Color? color = (_color == null || _color == Colors.black)
+                  ? null
+                  : _color;
+
+              return Text(
+                color != null
+                    ? "#${color.toHexString()}"
+                    : AppLocalizations.of(context).none,
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontStyle: FontStyle.italic,
+                ),
+              );
+            }(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAttachments() {
+    return ListView.separated(
+      separatorBuilder: (context, index) => Divider(),
+      padding: const EdgeInsets.all(16.0),
+      shrinkWrap: true,
+      itemCount: widget.task.attachments.length,
+      itemBuilder: (context, index) {
+        return ListTile(
+          title: Text(widget.task.attachments[index].file.name),
+          trailing: IconButton(
+            icon: Icon(Icons.download),
+            onPressed: () async {
+              var taskId = await ref
+                  .read(taskRepositoryProvider)
+                  .downloadAttachment(
+                    widget.task.id,
+                    widget.task.attachments[index],
+                  );
+              if (taskId.status == TaskStatus.complete) {
+                FileDownloader().openFile(task: taskId.task);
+              }
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildLabelList() {
+    return Wrap(
+      spacing: 10,
+      children:
+          _labels?.map((label) {
+            return LabelWidget(
+              label: label,
+              onDelete: () => _removeLabel(label),
+            );
+          }).toList() ??
+          [],
+    );
+  }
+
+  Future<List<String>> _searchLabel(String query) async {
+    var labelsResponse = await ref
+        .read(labelRepositoryProvider)
+        .getAll(query: query);
+
+    if (labelsResponse.isSuccessful) {
+      var labels = labelsResponse.toSuccess().body;
+
+      labels.removeWhere(
+        (labelToRemove) => _labels?.contains(labelToRemove) == true,
+      );
+      _suggestedLabels = labels;
+
+      return labels.map((e) => e.title).toList();
+    }
+    return [];
+  }
+
+  void _addLabel(String labelTitle) {
+    var label = _suggestedLabels?.firstWhereOrNull(
+      (e) => e.title == labelTitle,
+    );
+
+    if (label != null) {
+      setState(() {
+        _labels?.add(label);
+        _labelTypeAheadController.clear();
+      });
+    }
+
+    _checkChanged();
+  }
+
+  void _removeLabel(Label label) {
+    setState(() {
+      _labels?.removeWhere((l) => l.id == label.id);
+    });
+  }
+
+  void _createAndAddLabel(String labelTitle) async {
+    // Only add a label if there are none to add
+    if (labelTitle.isEmpty ||
+        _suggestedLabels?.firstWhereOrNull(
+              (label) => label.title == labelTitle,
+            ) !=
+            null) {
+      return;
+    }
+
+    final currentUser = ref.read(currentUserProvider);
+
+    if (currentUser != null) {
+      final newLabel = Label(title: labelTitle, createdBy: currentUser);
+
+      ref.read(labelRepositoryProvider).create(newLabel).then((createdLabel) {
+        if (createdLabel.isSuccessful) {
+          setState(() {
+            _labels?.add(createdLabel.toSuccess().body);
+            _labelTypeAheadController.clear();
+          });
+        }
+      });
+
+      _checkChanged();
+    }
+  }
+
+  Future<void> _addNewReminder(BuildContext context) async {
+    var selectedDate = await showDialog<DateTime>(
+      context: context,
+      builder: (_) => DatePickerDialog(
+        initialDate: DateTime.now(),
+        firstDate: DateTime.now(),
+        lastDate: DateTime(2100),
+        initialCalendarMode: DatePickerMode.day,
+      ),
+    );
+
+    if (selectedDate != null && context.mounted) {
+      var selectedTime = await showDialog<TimeOfDay>(
+        context: context,
+        builder: (_) =>
+            TimePickerDialog(initialTime: TimeOfDay.fromDateTime(selectedDate)),
+      );
+
+      if (selectedTime != null) {
+        setState(() {
+          _reminderDates?.add(
+            TaskReminder(
+              selectedDate.copyWith(
+                hour: selectedTime.hour,
+                minute: selectedTime.minute,
+              ),
+            ),
+          );
+
+          _checkChanged();
+        });
+      }
+    }
+  }
+
+  void _onColorEdit() {
+    var pickerColor = _color ?? Colors.black;
+    showDialog(
+      context: context,
+      builder: (context) => ColorPickerDialog(
+        pickerColor,
+        (color) {
+          if (color != Colors.black) {
+            setState(() {
+              _color = color;
+            });
+          } else {
+            setState(() {
+              _color = null;
+            });
+          }
+          Navigator.of(context).pop();
+
+          _checkChanged();
+        },
+        () {
+          Navigator.of(context).pop();
+        },
+      ),
+    );
+  }
+
+  Future<void> _showConfirmationDialog() async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return TaskSaveDialog(
+          onConfirm: () {
+            Navigator.pop(context);
+            Navigator.pop(context);
+          },
+          onCancel: () {
+            Navigator.pop(context);
+          },
+        );
+      },
+    );
+  }
+
+  void _checkChanged() {
+    setState(() {
+      var repeatAfterValue = getRepeatAfterValueFromDuration(
+        widget.task.repeatAfter,
+      );
+      var repeatAfterType = getRepeatAfterTypeFromDuration(
+        widget.task.repeatAfter,
+      );
+
+      var repeatAfter = repeatAfterType.getDuration(repeatAfterValue);
+
+      changed =
+          widget.task.title != _title ||
+          widget.task.description != _description ||
+          widget.task.dueDate != _dueDate ||
+          widget.task.startDate != _startDate ||
+          widget.task.endDate != _endDate ||
+          widget.task.repeatAfter != repeatAfter ||
+          widget.task.priority != _priority ||
+          widget.task.reminderDates != _reminderDates ||
+          widget.task.labels != _labels ||
+          widget.task.color != _color;
+    });
+  }
+
+  Future<void> _saveTask(BuildContext context) async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      // Removes all reminders with no value set.
+      _reminderDates?.removeWhere((d) => d.reminder == DateTime(0));
+
+      final updatedTask =
+          widget.task.copyWith(
+              title: _title,
+              description: _description,
+              reminderDates: _reminderDates,
+              priority: _priority,
+              labels: _labels,
+              repeatAfter: _repeatAfterUnit.getDuration(_repeatAfterValue),
+            )
+            //Need to be here as they can be null
+            ..dueDate = _dueDate
+            ..startDate = _startDate
+            ..endDate = _endDate
+            ..color = _color;
+
+      // update the labels
+      if (_labels != null) {
+        var updateLabelSuccess = await ref
+            .read(taskLabelBulkRepositoryProvider)
+            .update(updatedTask, _labels!);
+
+        if (!updateLabelSuccess.isSuccessful && context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(AppLocalizations.of(context).taskSaveError)),
+          );
+          return;
+        }
+      }
+
+      var saveSuccess = await ref
+          .read(taskPageControllerProvider.notifier)
+          .updateTask(updatedTask);
+
+      if (context.mounted) {
+        if (saveSuccess) {
+          if (ModalRoute.of(context)?.isCurrent == true) {
+            Navigator.of(context).pop(updatedTask);
+          }
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(AppLocalizations.of(context).taskUpdatedSuccess),
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(AppLocalizations.of(context).taskSaveError)),
+          );
+        }
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+}
