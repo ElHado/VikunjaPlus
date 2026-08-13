@@ -113,11 +113,11 @@ class HomePageState extends ConsumerState<HomePage> {
   void scheduleIntent() async {
     try {
       platform.setMethodCallHandler((call) async {
-        return showAddItemDialog(call.arguments as String);
+        await showAddItemDialog(call.arguments as String);
       });
 
       String? argument = await platform.invokeMethod<String>("isQuickTile", "");
-      return showAddItemDialog(argument);
+      await showAddItemDialog(argument);
     } catch (e) {
       developer.log("Error $e");
     }

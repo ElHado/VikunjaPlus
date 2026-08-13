@@ -93,7 +93,8 @@ void main() async {
       options.addIntegration(LoggingIntegration());
       options.enableLogs = true;
       options.tracesSampleRate = 1.0;
-      options.profilesSampleRate = 1.0;
+      // profiling (profilesSampleRate) entfernt: experimentelle API,
+      // führt zu Analyzer-Warnung und ist für den Fork nicht benötigt.
       options.beforeSend = (event, hint) {
         // Filter out network unreachability errors (Cronet exceptions)
         // These are Chromium/Cronet network errors that appear in format: "net::ERR_..."

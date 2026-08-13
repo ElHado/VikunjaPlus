@@ -113,7 +113,7 @@ class Client {
         fragment: uri.fragment,
       );
 
-      return _handleResponseWithRefresh(mapper, () async {
+      return await _handleResponseWithRefresh(mapper, () async {
         return _httpClient.get(uri, headers: await getHeaders());
       });
     } catch (e, s) {
@@ -126,7 +126,7 @@ class Client {
     T Function(dynamic body)? mapper,
   }) async {
     try {
-      return _handleResponseWithRefresh(mapper, () async {
+      return await _handleResponseWithRefresh(mapper, () async {
         return _httpClient.delete(
           '$apiBase$url'.toUri()!,
           headers: await getHeaders(),
@@ -144,7 +144,7 @@ class Client {
   }) async {
     try {
       var encodedBody = _encoder.convert(body);
-      return _handleResponseWithRefresh(mapper, () async {
+      return await _handleResponseWithRefresh(mapper, () async {
         return _httpClient.post(
           '$apiBase$url'.toUri()!,
           headers: await getHeaders(),
@@ -163,7 +163,7 @@ class Client {
   }) async {
     try {
       var encodedBody = _encoder.convert(body);
-      return _handleResponseWithRefresh(mapper, () async {
+      return await _handleResponseWithRefresh(mapper, () async {
         return _httpClient.put(
           '$apiBase$url'.toUri()!,
           headers: await getHeaders(),
