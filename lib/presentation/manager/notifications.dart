@@ -235,7 +235,13 @@ class NotificationHandler {
     );
 
     if (taskResponse.isSuccessful) {
-      await notificationsPlugin.cancelAll();
+      // Nur noch geplante (pending) Notifications canceln, nicht alle.
+      // Bereits angezeigte Benachrichtigungen bleiben im Shade erhalten,
+      // bis der User sie selbst bearbeitet oder wegwischt.
+      final pending = await notificationsPlugin.pendingNotificationRequests();
+      for (final p in pending) {
+        await notificationsPlugin.cancel(id: p.id);
+      }
       for (final task in taskResponse.toSuccess().body) {
         if (task.done) continue;
         for (final reminder in task.reminderDates) {
