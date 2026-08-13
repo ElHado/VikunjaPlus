@@ -1,0 +1,35 @@
+# SyncThing ignore patterns für den Vikunja-Fork
+# Build-Artefakte – nicht syncen (werden auf jedem Rechner neu generiert)
+build/
+.dart_tool/
+.pub-cache/
+.packages
+.pub/
+
+# IDE/Editor-Konfiguration (pro Rechner unterschiedlich)
+.idea/
+*.iml
+
+# Android-Spezifisch
+android/.gradle/
+android/app/build/
+android/.idea/
+local.properties
+
+# iOS-Spezifisch
+ios/.symlinks/
+ios/Pods/
+ios/build/
+ios/.generated/
+ios/Flutter/Flutter.podspec
+
+# Web
+web/.build/
+
+# Plattform-spezifische Builds
+windows/
+macos/
+linux/
+
+# Test-Coverage
+coverage/
