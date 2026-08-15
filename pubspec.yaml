@@ -63,6 +63,9 @@ flutter_icons:
   adaptive_icon_background: "#FF455486"
   adaptive_icon_foreground: "assets/vikunja_logo_adaptive.png"
 
+dependency_overrides:
+  flutter_inappwebview_android: 1.2.0-beta.3
+
 flutter:
   uses-material-design: true
   generate: true
