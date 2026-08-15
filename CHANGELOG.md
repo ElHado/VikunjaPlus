@@ -5,6 +5,21 @@ Alle nennenswerten Änderungen an diesem Fork werden hier dokumentiert.
 Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung an [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.2.0] - 2026-08-16
+
+### Hinzugefügt
+
+- **Deutsche Übersetzung komplettiert**
+  Die App ist jetzt vollständig auf Deutsch nutzbar. Alle ~150 Textschlüssel
+  wurden übersetzt (Menüs, Fehlermeldungen, Prioritäten, Einstellungen, etc.).
+- **Eigenes App-Logo** – das Fork-Logo ersetzt das originale Vikunja-Logo.
+
+### Behoben
+
+- **Text-Overflow im Menü** – der deutsche Text "Nur Aufgaben mit
+  Fälligkeitsdatum" war länger als der verfügbare Platz im Popup-Menü.
+  Gekürzt und damit den gelb-schwarzen Overflow-Indikator entfernt.
+
 ## [0.1.9] - 2026-08-13
 
 ### Behoben

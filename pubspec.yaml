@@ -1,7 +1,7 @@
 name: vikunja_app
 description: Vikunja as Flutter cross platform app
 
-version: 0.1.9
+version: 0.2.0
 
 environment:
   sdk: ^3.9.0
@@ -56,18 +56,19 @@ dev_dependencies:
   riverpod_lint: ^2.6.5
 
 flutter_icons:
-  image_path: "assets/vikunja_logo.png"
-  image_path_ios: "assets/vikunja_ios.png"
+  image_path: "assets/vikunja-fork-logo.png"
+  image_path_ios: "assets/vikunja-fork-logo.png"
   android: true
   ios: true
   adaptive_icon_background: "#FF455486"
-  adaptive_icon_foreground: "assets/vikunja_logo_adaptive.png"
+  adaptive_icon_foreground: "assets/vikunja-fork-logo.png"
 
 flutter:
   uses-material-design: true
   generate: true
   assets:
     - assets/graphics/hypnotize.png
+    - assets/vikunja-fork-logo.png
     - assets/vikunja_logo.png
     - assets/vikunja_logo_full.png
     - assets/vikunja_logo_full_white.png
