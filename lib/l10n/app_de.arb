@@ -92,7 +92,7 @@
     "placeholders": { "version": { "type": "String" } }
   },
   "noNotificationPermission": "Keine Benachrichtigungsberechtigung!",
-  "onlyShowTasksWithDueDate": "Nur Aufgaben mit Fälligkeitsdatum",
+  "onlyShowTasksWithDueDate": "Nur mit Fälligkeitsdatum",
   "noTasks": "Keine Aufgaben",
   "noViews": "Keine Ansichten",
   "notImplemented": "Nicht implementiert",
