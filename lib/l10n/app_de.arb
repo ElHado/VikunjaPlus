@@ -65,7 +65,7 @@
   "enterTitle": "Titel eingeben",
   "limitLabel": "Limit:",
   "backgroundRefreshInterval": "Hintergrund-Aktualisierungsintervall (Minuten):",
-  "noLimitHelper": "Minimum: 15, Setze 0 für keine Aktualisierung",
+  "noLimitHelper": "0 = aus, 15 Min – 6 Std.",
   "addTaskTooltip": "Aufgabe hinzufügen",
   "newBucketName": "Neuer Bucket-Name",
   "bucketExample": "z.B. To Do",

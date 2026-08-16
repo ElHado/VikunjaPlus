@@ -65,7 +65,7 @@
   "enterTitle": "Enter title",
   "limitLabel": "Limit:",
   "backgroundRefreshInterval": "Background Refresh Interval (minutes): ",
-  "noLimitHelper": "Minimum: 15, Set limit of 0 for no refresh",
+  "noLimitHelper": "0 = off, 15 min – 6 h",
   "addTaskTooltip": "Add task",
   "newBucketName": "New bucket name",
   "bucketExample": "eg. To Do",

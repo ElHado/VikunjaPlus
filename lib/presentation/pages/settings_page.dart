@@ -1,6 +1,5 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:vikunja_app/core/di/locale_provider.dart';
@@ -29,9 +28,17 @@ class SettingsPage extends ConsumerStatefulWidget {
 }
 
 class SettingsPageState extends ConsumerState<SettingsPage> {
-  final TextEditingController durationTextController = TextEditingController();
+  static const _intervalMinutes = [0, 15, 30, 45, 60, 90, 120, 180, 240, 300, 360];
+  bool _isDragging = false;
+  double _dragValue = 0;
 
   Version? newestVersion;
+
+  String _formatInterval(int minutes, AppLocalizations l10n) {
+    if (minutes == 0) return '0 — ${l10n.none}';
+    if (minutes < 60) return '$minutes min';
+    return '${minutes ~/ 60} h';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +56,13 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
       appBar: AppBar(title: Text(l10n.settings)),
       body: settings.when(
         data: (settings) {
-          durationTextController.text = settings.refreshInterval.toString();
+          // Slider-Position aus gespeichertem Wert ableiten
+          final sliderIndex = _isDragging
+              ? _dragValue.round()
+              : (_intervalMinutes.indexOf(settings.refreshInterval).clamp(
+                  0,
+                  _intervalMinutes.length - 1,
+                ));
 
           return ListView(
             children: [
@@ -144,31 +157,40 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
               Divider(),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Flexible(
-                      child: TextField(
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                        ],
-                        keyboardType: TextInputType.number,
-                        controller: durationTextController,
-                        decoration: InputDecoration(
-                          labelText: l10n.backgroundRefreshInterval,
-                          helperText: l10n.noLimitHelper,
-                        ),
-                      ),
+                    Text(
+                      '${l10n.backgroundRefreshInterval} ${_formatInterval(_intervalMinutes[sliderIndex], l10n)}',
+                      style: Theme.of(context).textTheme.titleSmall,
                     ),
-                    TextButton(
-                      onPressed: () {
+                    Slider(
+                      value: sliderIndex.toDouble(),
+                      min: 0,
+                      max: (_intervalMinutes.length - 1).toDouble(),
+                      divisions: _intervalMinutes.length - 1,
+                      label: _formatInterval(
+                        _intervalMinutes[sliderIndex],
+                        l10n,
+                      ),
+                      onChanged: (v) => setState(() {
+                        _isDragging = true;
+                        _dragValue = v;
+                      }),
+                      onChangeEnd: (v) {
+                        final idx = v.round();
+                        setState(() {
+                          _isDragging = false;
+                          _dragValue = idx.toDouble();
+                        });
                         ref
                             .read(settingsControllerProvider.notifier)
-                            .setRefreshInterval(
-                              int.tryParse(durationTextController.value.text) ??
-                                  0,
-                            );
+                            .setRefreshInterval(_intervalMinutes[idx]);
                       },
-                      child: Text(l10n.save),
+                    ),
+                    Text(
+                      l10n.noLimitHelper,
+                      style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ],
                 ),
