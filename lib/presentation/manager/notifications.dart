@@ -72,33 +72,59 @@ class NotificationHandler {
   FlutterLocalNotificationsPlugin get notificationsPlugin =>
       FlutterLocalNotificationsPlugin();
 
-  var androidSpecificsDueDate = AndroidNotificationDetails(
-    "Vikunja1",
-    "Due Date Notifications",
-    channelDescription: "description",
-    icon: 'vikunja_notification_logo',
-    importance: Importance.high,
-    actions: <AndroidNotificationAction>[
-      AndroidNotificationAction(_notificationActionDone, 'Done'),
-    ],
-  );
-  var androidSpecificsReminders = AndroidNotificationDetails(
-    "Vikunja2",
-    "Reminder Notifications",
-    channelDescription: "description",
-    icon: 'vikunja_notification_logo',
-    importance: Importance.high,
-    actions: <AndroidNotificationAction>[
-      AndroidNotificationAction(_notificationActionDone, 'Done'),
-    ],
-  );
-  late DarwinNotificationDetails iOSSpecifics;
-  late NotificationDetails platformChannelSpecificsDueDate;
-  late NotificationDetails platformChannelSpecificsReminders;
+  final String _doneActionLabel;
+  final String _channelDueName;
+  final String _channelReminderName;
+  final String _channelDescription;
+  final String _dueFallbackBody;
+  final String _reminderFallbackBody;
+  final String _testNotificationTitle;
+  final String _testNotificationBody;
 
-  NotificationHandler();
+  late final AndroidNotificationDetails androidSpecificsDueDate;
+  late final AndroidNotificationDetails androidSpecificsReminders;
+  late final DarwinNotificationDetails iOSSpecifics;
+  late final NotificationDetails platformChannelSpecificsDueDate;
+  late final NotificationDetails platformChannelSpecificsReminders;
 
-  Future<void> initNotifications() async {
+  NotificationHandler({
+    String doneActionLabel = 'Erledigt',
+    String channelDueName = 'Fälligkeits-Benachrichtigungen',
+    String channelReminderName = 'Erinnerungs-Benachrichtigungen',
+    String channelDescription =
+        'Benachrichtigungen für fällige Aufgaben und Erinnerungen',
+    String dueFallbackBody = 'Fällig.',
+    String reminderFallbackBody = 'Erinnerung',
+    String testNotificationTitle = 'Test-Benachrichtigung',
+    String testNotificationBody = 'Dies ist eine Test-Benachrichtigung',
+  })  : _doneActionLabel = doneActionLabel,
+        _channelDueName = channelDueName,
+        _channelReminderName = channelReminderName,
+        _channelDescription = channelDescription,
+        _dueFallbackBody = dueFallbackBody,
+        _reminderFallbackBody = reminderFallbackBody,
+        _testNotificationTitle = testNotificationTitle,
+        _testNotificationBody = testNotificationBody {
+    androidSpecificsDueDate = AndroidNotificationDetails(
+      "Vikunja1",
+      _channelDueName,
+      channelDescription: _channelDescription,
+      icon: 'vikunja_notification_logo',
+      importance: Importance.high,
+      actions: <AndroidNotificationAction>[
+        AndroidNotificationAction(_notificationActionDone, _doneActionLabel),
+      ],
+    );
+    androidSpecificsReminders = AndroidNotificationDetails(
+      "Vikunja2",
+      _channelReminderName,
+      channelDescription: _channelDescription,
+      icon: 'vikunja_notification_logo',
+      importance: Importance.high,
+      actions: <AndroidNotificationAction>[
+        AndroidNotificationAction(_notificationActionDone, _doneActionLabel),
+      ],
+    );
     iOSSpecifics = DarwinNotificationDetails(
       categoryIdentifier: 'doneCategory',
     );
@@ -110,6 +136,9 @@ class NotificationHandler {
       android: androidSpecificsReminders,
       iOS: iOSSpecifics,
     );
+  }
+
+  Future<void> initNotifications() async {
     await _initNotifications();
 
     initBackgroundCommunication();
@@ -121,8 +150,7 @@ class NotificationHandler {
   Future<void> _requestAndroidExactAlarmPermission() async {
     final androidPlugin = notificationsPlugin
         .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin
-        >();
+            AndroidFlutterLocalNotificationsPlugin>();
     if (androidPlugin == null) return;
 
     final canSchedule = await androidPlugin.canScheduleExactNotifications();
@@ -143,7 +171,10 @@ class NotificationHandler {
         DarwinNotificationCategory(
           'doneCategory',
           actions: <DarwinNotificationAction>[
-            DarwinNotificationAction.plain(_notificationActionDone, 'Done'),
+            DarwinNotificationAction.plain(
+              _notificationActionDone,
+              _doneActionLabel,
+            ),
           ],
         ),
       ],
@@ -212,8 +243,8 @@ class NotificationHandler {
   void sendTestNotification() {
     notificationsPlugin.show(
       id: Random().nextInt(10000000),
-      title: "Test Notification",
-      body: "This is a test notification",
+      title: _testNotificationTitle,
+      body: _testNotificationBody,
       notificationDetails: platformChannelSpecificsReminders,
     );
   }
@@ -221,8 +252,7 @@ class NotificationHandler {
   void requestIOSPermissions() {
     notificationsPlugin
         .resolvePlatformSpecificImplementation<
-          IOSFlutterLocalNotificationsPlugin
-        >()
+            IOSFlutterLocalNotificationsPlugin>()
         ?.requestPermissions(alert: true, badge: true, sound: true);
   }
 
@@ -245,10 +275,14 @@ class NotificationHandler {
       for (final task in taskResponse.toSuccess().body) {
         if (task.done) continue;
         for (final reminder in task.reminderDates) {
+          // Title = Task-Name, Body = Beschreibung (oder Fallback)
+          final reminderBody = (task.description.isNotEmpty)
+              ? task.description
+              : _reminderFallbackBody;
           await scheduleNotification(
             (reminder.reminder.millisecondsSinceEpoch / 1000).floor(),
-            "Reminder",
-            "This is your reminder for '${task.title}'",
+            task.title,
+            reminderBody,
             notificationsPlugin,
             reminder.reminder,
             await FlutterTimezone.getLocalTimezone(),
@@ -256,10 +290,14 @@ class NotificationHandler {
           );
         }
         if (task.hasDueDate) {
+          // Title = Task-Name, Body = Beschreibung (oder Fallback)
+          final dueBody = (task.description.isNotEmpty)
+              ? task.description
+              : _dueFallbackBody;
           await scheduleNotification(
             task.id,
-            "Due Reminder",
-            "The task '${task.title}' is due.",
+            task.title,
+            dueBody,
             notificationsPlugin,
             task.dueDate!,
             await FlutterTimezone.getLocalTimezone(),

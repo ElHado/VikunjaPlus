@@ -223,5 +223,13 @@
   "versionDialogUsed": "Your server version: {versionString}",
   "@versionDialogUsed": {
     "placeholders": { "versionString": { "type": "String" } }
-  }
+  },
+
+  "notificationChannelDueName": "Due date notifications",
+  "notificationChannelReminderName": "Reminder notifications",
+  "notificationActionDone": "Done",
+  "notificationDueFallbackBody": "Due.",
+  "notificationReminderFallbackBody": "Reminder",
+  "notificationTestTitle": "Test Notification",
+  "notificationTestBody": "This is a test notification"
 }

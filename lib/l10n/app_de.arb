@@ -223,5 +223,13 @@
   "versionDialogUsed": "Deine Serverversion: {versionString}",
   "@versionDialogUsed": {
     "placeholders": { "versionString": { "type": "String" } }
-  }
+  },
+
+  "notificationChannelDueName": "Fälligkeits-Benachrichtigungen",
+  "notificationChannelReminderName": "Erinnerungs-Benachrichtigungen",
+  "notificationActionDone": "Erledigt",
+  "notificationDueFallbackBody": "Fällig.",
+  "notificationReminderFallbackBody": "Erinnerung",
+  "notificationTestTitle": "Test-Benachrichtigung",
+  "notificationTestBody": "Dies ist eine Test-Benachrichtigung"
 }
