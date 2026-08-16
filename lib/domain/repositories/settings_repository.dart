@@ -33,6 +33,9 @@ abstract class SettingsRepository {
 
   Future<void> setDisplayDoneTasks(int projectId, bool value);
 
+  Future<bool> getTaskSortChronological(int projectId);
+  Future<void> setTaskSortChronological(int projectId, bool value);
+
   Future<List<String>> getPastServers();
 
   Future<void> setPastServers(List<String> server);

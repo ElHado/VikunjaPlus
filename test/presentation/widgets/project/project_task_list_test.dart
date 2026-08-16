@@ -55,7 +55,7 @@ void main() {
     );
     parentProject.views = [view];
 
-    final model = ProjectPageModel(parentProject, 0, tasks, [], false, false);
+    final model = ProjectPageModel(parentProject, 0, tasks, [], false, false, false);
 
     await tester.pumpWidget(
       ProviderScope(

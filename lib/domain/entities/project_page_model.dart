@@ -9,6 +9,7 @@ class ProjectPageModel {
   List<Bucket> buckets;
   bool displayDoneTask;
   bool isLoadingNextPage;
+  bool chronologicalSort;
 
   ProjectPageModel(
     this.project,
@@ -17,6 +18,7 @@ class ProjectPageModel {
     this.buckets,
     this.displayDoneTask,
     this.isLoadingNextPage,
+    this.chronologicalSort,
   );
 
   ProjectPageModel copyWith({
@@ -26,6 +28,7 @@ class ProjectPageModel {
     List<Bucket>? buckets,
     bool? displayDoneTask,
     bool? isLoadingNextPage,
+    bool? chronologicalSort,
   }) {
     return ProjectPageModel(
       project ?? this.project,
@@ -34,6 +37,7 @@ class ProjectPageModel {
       buckets ?? this.buckets,
       displayDoneTask ?? this.displayDoneTask,
       isLoadingNextPage ?? this.isLoadingNextPage,
+      chronologicalSort ?? this.chronologicalSort,
     );
   }
 }

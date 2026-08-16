@@ -112,6 +112,19 @@ class SettingsDatasource {
     );
   }
 
+  Future<bool> getTaskSortChronological(int projectId) async {
+    var value =
+        await _storage.read(key: "task_sort_chronological_$projectId");
+    return value == "1";
+  }
+
+  Future<void> setTaskSortChronological(int projectId, bool value) {
+    return _storage.write(
+      key: "task_sort_chronological_$projectId",
+      value: value ? "1" : "0",
+    );
+  }
+
   Future<List<String>> getPastServers() async {
     String jsonString = await _storage.read(key: "recent-servers") ?? "[]";
     List<dynamic> server = jsonDecode(jsonString);

@@ -231,5 +231,7 @@
   "notificationDueFallbackBody": "Due.",
   "notificationReminderFallbackBody": "Reminder",
   "notificationTestTitle": "Test Notification",
-  "notificationTestBody": "This is a test notification"
+  "notificationTestBody": "This is a test notification",
+
+  "sortChronologically": "Sort by due date"
 }

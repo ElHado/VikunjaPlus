@@ -88,6 +88,16 @@ class SettingsRepositoryImpl implements SettingsRepository {
   }
 
   @override
+  Future<bool> getTaskSortChronological(int projectId) async {
+    return _datasource.getTaskSortChronological(projectId);
+  }
+
+  @override
+  Future<void> setTaskSortChronological(int projectId, bool value) {
+    return _datasource.setTaskSortChronological(projectId, value);
+  }
+
+  @override
   Future<List<String>> getPastServers() async {
     return _datasource.getPastServers();
   }

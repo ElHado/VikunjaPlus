@@ -117,6 +117,10 @@ class ProjectPageState extends ConsumerState<ProjectDetailPage> {
               builder: (context) => ProjectEditPage(
                 project: project,
                 displayDoneTask: displayDoneTask,
+                chronologicalSort:
+                    ref.read(projectControllerProvider(project)).value
+                            ?.chronologicalSort ??
+                        false,
               ),
             ),
           ),

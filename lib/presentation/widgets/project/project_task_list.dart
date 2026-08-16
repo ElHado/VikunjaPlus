@@ -113,14 +113,20 @@ class ProjectTaskList extends ConsumerWidget {
   }
 
   Widget _buildTaskList(WidgetRef ref, List<Task> tasks) {
-    // Sortierung nach Fälligkeitsdatum (aufsteigend, aktuellste zuerst).
-    // Aufgaben ohne Datum landen am Ende.
-    tasks.sort((a, b) {
-      if (!a.hasDueDate && !b.hasDueDate) return 0;
-      if (!a.hasDueDate) return 1;
-      if (!b.hasDueDate) return -1;
-      return a.dueDate!.compareTo(b.dueDate!);
-    });
+    // Nur nach Fälligkeitsdatum sortieren, wenn die Option aktiviert ist
+    // (wird im Projekt-Bearbeiten-Menü umgeschaltet).
+    final projectController = ref.watch(projectControllerProvider(project));
+    final chronologicalSort =
+        projectController.valueOrNull?.chronologicalSort ?? false;
+
+    if (chronologicalSort) {
+      tasks.sort((a, b) {
+        if (!a.hasDueDate && !b.hasDueDate) return 0;
+        if (!a.hasDueDate) return 1;
+        if (!b.hasDueDate) return -1;
+        return a.dueDate!.compareTo(b.dueDate!);
+      });
+    }
 
     return SliverReorderableList(
       itemBuilder: (context, index) {

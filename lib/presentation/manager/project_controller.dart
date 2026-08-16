@@ -21,6 +21,9 @@ class ProjectController extends _$ProjectController with PaginationMixin<Task> {
     var displayDoneTask = await ref
         .read(settingsRepositoryProvider)
         .getDisplayDoneTasks(project.id);
+    var chronologicalSort = await ref
+        .read(settingsRepositoryProvider)
+        .getTaskSortChronological(project.id);
     int? viewId = _getFirstListViewIdFromProject(project);
 
     var tasksResponse = await _loadTasks(
@@ -33,7 +36,7 @@ class ProjectController extends _$ProjectController with PaginationMixin<Task> {
     if (tasksResponse.isSuccessful) {
       updateTotalPages(tasksResponse.toSuccess().headers);
       final tasks = tasksResponse.toSuccess().body;
-      return ProjectPageModel(project, 0, tasks, [], displayDoneTask, false);
+      return ProjectPageModel(project, 0, tasks, [], displayDoneTask, false, chronologicalSort);
     } else if (tasksResponse.isException) {
       throw Exception(tasksResponse.toException().message);
     } else {
@@ -116,6 +119,9 @@ class ProjectController extends _$ProjectController with PaginationMixin<Task> {
     var displayDoneTask = await ref
         .read(settingsRepositoryProvider)
         .getDisplayDoneTasks(project.id);
+    var chronologicalSort = await ref
+        .read(settingsRepositoryProvider)
+        .getTaskSortChronological(project.id);
 
     var tasks = <Task>[];
     int? viewId = viewIndex == 0
@@ -170,6 +176,7 @@ class ProjectController extends _$ProjectController with PaginationMixin<Task> {
         buckets,
         displayDoneTask,
         false,
+        chronologicalSort,
       ),
     );
   }
@@ -443,6 +450,19 @@ class ProjectController extends _$ProjectController with PaginationMixin<Task> {
     }
 
     return false;
+  }
+
+  Future<void> setTaskSortChronological(bool chronological) async {
+    final value = state.value;
+    if (value == null) return;
+
+    await ref
+        .read(settingsRepositoryProvider)
+        .setTaskSortChronological(value.project.id, chronological);
+
+    state = AsyncData(
+      value.copyWith(chronologicalSort: chronological),
+    );
   }
 
   Future<bool> updateProject(Project project) async {

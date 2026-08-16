@@ -231,5 +231,7 @@
   "notificationDueFallbackBody": "Fällig.",
   "notificationReminderFallbackBody": "Erinnerung",
   "notificationTestTitle": "Test-Benachrichtigung",
-  "notificationTestBody": "Dies ist eine Test-Benachrichtigung"
+  "notificationTestBody": "Dies ist eine Test-Benachrichtigung",
+
+  "sortChronologically": "Nach Fälligkeit sortieren"
 }

@@ -8,11 +8,13 @@ import 'package:vikunja_app/presentation/widgets/button.dart';
 class ProjectEditPage extends ConsumerStatefulWidget {
   final Project project;
   final bool displayDoneTask;
+  final bool chronologicalSort;
 
   const ProjectEditPage({
     super.key,
     required this.project,
     required this.displayDoneTask,
+    required this.chronologicalSort,
   });
 
   @override
@@ -25,10 +27,12 @@ class ProjectEditPageState extends ConsumerState<ProjectEditPage> {
   String? title;
   String? description;
   bool? displayDoneTask;
+  bool? chronologicalSort;
 
   @override
   void initState() {
     displayDoneTask = widget.displayDoneTask;
+    chronologicalSort = widget.chronologicalSort;
 
     super.initState();
   }
@@ -106,6 +110,20 @@ class ProjectEditPageState extends ConsumerState<ProjectEditPage> {
                   },
                 ),
               ),
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 10.0),
+                child: CheckboxListTile(
+                  value: chronologicalSort,
+                  title: Text(l10n.sortChronologically),
+                  onChanged: (value) {
+                    value ??= false;
+
+                    setState(() {
+                      chronologicalSort = value;
+                    });
+                  },
+                ),
+              ),
               Builder(
                 builder: (context) => Padding(
                   padding: EdgeInsets.symmetric(vertical: 10.0),
@@ -151,6 +169,10 @@ class ProjectEditPageState extends ConsumerState<ProjectEditPage> {
         await ref
             .read(projectControllerProvider(project).notifier)
             .setDisplayDoneTasks(displayDoneTask!);
+
+        await ref
+            .read(projectControllerProvider(project).notifier)
+            .setTaskSortChronological(chronologicalSort!);
       } else if (context.mounted) {
         ScaffoldMessenger.of(
           context,
