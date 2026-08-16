@@ -14,6 +14,35 @@ import 'package:vikunja_app/data/repositories/task_repository_impl.dart';
 import 'package:vikunja_app/domain/repositories/task_repository.dart';
 import 'package:vikunja_app/presentation/manager/widget_controller.dart';
 
+/// Entfernt HTML-Tags aus einem String und dekodiert HTML-Entities.
+/// Wichtig für die Task-Beschreibung, da Vikunja diese als HTML speichert.
+String stripHtml(String html) {
+  // Zuerst HTML-Entities dekodieren
+  var text = html
+      .replaceAll('&amp;', '&')
+      .replaceAll('&nbsp;', ' ')
+      .replaceAll('&lt;', '<')
+      .replaceAll('&gt;', '>')
+      .replaceAll('&quot;', '"')
+      .replaceAll('&#39;', "'")
+      .replaceAll('&#x27;', "'")
+      .replaceAll('&#x2F;', '/');
+
+  // HTML-Tags entfernen
+  text = text.replaceAll(RegExp(r'<[^>]*>'), '');
+
+  // Zeilenumbrüche aus Block-Tags durch echte Newlines ersetzen
+  text = text.replaceAllMapped(
+    RegExp(r'\s*\n\s*'),
+    (_) => ' ',
+  );
+
+  // Mehrfache Leerzeichen reduzieren
+  text = text.replaceAll(RegExp(r'\s+'), ' ').trim();
+
+  return text;
+}
+
 const _actionDonePortName = 'action_done_port_name';
 const _notificationActionDone = 'action_done';
 
@@ -277,7 +306,7 @@ class NotificationHandler {
         for (final reminder in task.reminderDates) {
           // Title = Task-Name, Body = Beschreibung (oder Fallback)
           final reminderBody = (task.description.isNotEmpty)
-              ? task.description
+              ? stripHtml(task.description)
               : _reminderFallbackBody;
           await scheduleNotification(
             (reminder.reminder.millisecondsSinceEpoch / 1000).floor(),
@@ -292,7 +321,7 @@ class NotificationHandler {
         if (task.hasDueDate) {
           // Title = Task-Name, Body = Beschreibung (oder Fallback)
           final dueBody = (task.description.isNotEmpty)
-              ? task.description
+              ? stripHtml(task.description)
               : _dueFallbackBody;
           await scheduleNotification(
             task.id,

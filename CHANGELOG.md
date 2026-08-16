@@ -5,6 +5,34 @@ Alle nennenswerten Änderungen an diesem Fork werden hier dokumentiert.
 Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung an [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.2.1] - 2026-08-16
+
+### Behoben
+
+- **HTML-Tags in Benachrichtigungen entfernt**
+  Die Task-Beschreibung wird von Vikunja als HTML gespeichert (z. B.
+  `<p>Text</p>`). In Benachrichtigungen wurden diese Tags nun sichtbar
+  angezeigt. Ein HTML-Stripper bereinigt den Text vor der Anzeige.
+- **Default Background-Refresh auf 30 Minuten** (war 0 = aus)
+  Erinnerungen funktionieren jetzt out-of-the-box, ohne dass der User
+  das Intervall erst in den Einstellungen setzen muss.
+
+### Geändert
+
+- **Background-Refresh-Einstellung:** Textfeld + Save-Button durch
+  Schieberegler ersetzt. Stufen: Aus, 15/30/45 Min, 1–6 Stunden.
+  Speichert automatisch beim Loslassen.
+- **Notification-Titel und -Text:** Titel ist jetzt der Task-Name
+  (statt "Due Reminder" / "Reminder"), Text ist die Task-Beschreibung
+  (statt "The task 'X' is due" / "This is your reminder for 'X'").
+- **Notification-Lokalisierung:** Action-Button "Done" → "Erledigt",
+  Android-Channel-Namen auf Deutsch, alle Notification-Strings jetzt
+  über ARB übersetzbar.
+- **Aufgabensortierung in Projekten:** Neue Option im Projekt-Bearbeiten-
+  Dialog "Nach Fälligkeit sortieren" – Aufgaben werden dann aufsteigend
+  nach Fälligkeitsdatum sortiert (aktuellste zuerst). Standard ist die
+  bisherige manuelle Sortierung.
+
 ## [0.2.0] - 2026-08-16
 
 ### Hinzugefügt
