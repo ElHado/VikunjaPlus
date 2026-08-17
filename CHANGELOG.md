@@ -5,7 +5,7 @@ Alle nennenswerten Änderungen an diesem Fork werden hier dokumentiert.
 Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung an [Semantic Versioning](https://semver.org/lang/de/).
 
-## [0.2.2] - 2026-08-16
+## [0.2.2] - 2026-08-17
 
 ### Behoben
 
