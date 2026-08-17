@@ -189,19 +189,9 @@ class HomePageState extends ConsumerState<HomePage> {
   }
 
   Future<void> initNotifications() async {
-    // Lokalisierung VOR dem ersten async-Gap laden (use_build_context_synchronously)
-    final loc = AppLocalizations.of(context);
     var notifGranted = await Permission.notification.isGranted;
     if (notifGranted) {
-      NotificationHandler notificationHandler = NotificationHandler(
-        doneActionLabel: loc.notificationActionDone,
-        channelDueName: loc.notificationChannelDueName,
-        channelReminderName: loc.notificationChannelReminderName,
-        dueFallbackBody: loc.notificationDueFallbackBody,
-        reminderFallbackBody: loc.notificationReminderFallbackBody,
-        testNotificationTitle: loc.notificationTestTitle,
-        testNotificationBody: loc.notificationTestBody,
-      );
+      NotificationHandler notificationHandler = NotificationHandler();
       await notificationHandler.initNotifications();
       notificationHandler.addListener(onNotificationDone);
 
