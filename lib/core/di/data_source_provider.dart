@@ -13,7 +13,6 @@ import 'package:vikunja_app/data/data_sources/task_data_source.dart';
 import 'package:vikunja_app/data/data_sources/task_label_bulk_data_source.dart';
 import 'package:vikunja_app/data/data_sources/task_label_data_source.dart';
 import 'package:vikunja_app/data/data_sources/user_data_source.dart';
-import 'package:vikunja_app/data/data_sources/version_data_source.dart';
 
 part 'data_source_provider.g.dart';
 
@@ -74,11 +73,6 @@ ServerDataSource serverDataSource(Ref ref) {
 @riverpod
 SettingsDatasource settingsDataSource(Ref ref) {
   return SettingsDatasource(FlutterSecureStorage());
-}
-
-@riverpod
-VersionDataSource versionDataSource(Ref ref) {
-  return VersionDataSource();
 }
 
 @riverpod

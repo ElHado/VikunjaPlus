@@ -11,7 +11,6 @@ import 'package:vikunja_app/core/utils/language_autonyms.dart';
 import 'package:vikunja_app/core/utils/user_extensions.dart';
 import 'package:vikunja_app/domain/entities/project.dart';
 import 'package:vikunja_app/domain/entities/user.dart';
-import 'package:vikunja_app/domain/entities/version.dart';
 import 'package:vikunja_app/l10n/gen/app_localizations.dart';
 import 'package:vikunja_app/presentation/manager/settings_controller.dart';
 import 'package:vikunja_app/presentation/pages/error_widget.dart';
@@ -31,8 +30,6 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
   static const _intervalMinutes = [0, 15, 30, 45, 60, 90, 120, 180, 240, 300, 360];
   bool _isDragging = false;
   double _dragValue = 0;
-
-  Version? newestVersion;
 
   String _formatInterval(int minutes, AppLocalizations l10n) {
     if (minutes == 0) return '0 — ${l10n.none}';
@@ -185,15 +182,6 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
                 ),
               ),
               Divider(),
-              CheckboxListTile(
-                title: Text(l10n.getVersionNotifications),
-                value: settings.versionNotifications,
-                onChanged: (value) {
-                  ref
-                      .read(settingsControllerProvider.notifier)
-                      .setVersionNotifications(value ?? false);
-                },
-              ),
               TextButton(
                 onPressed: () async {
                   var notifGranted = await Permission.notification.isGranted;
@@ -211,35 +199,6 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
                   }
                 },
                 child: Text(l10n.sendTestNotification),
-              ),
-              TextButton(
-                onPressed: () async {
-                  var newestVersion = await ref
-                      .read(versionRepositoryProvider)
-                      .getLatestVersionTag();
-                  if (newestVersion == null && context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Couldn't get latest version!")),
-                    );
-                  } else {
-                    setState(() {
-                      this.newestVersion = newestVersion;
-                    });
-                  }
-                },
-                child: Text(l10n.checkForLatestVersion),
-              ),
-              Text(
-                settings.currentVersion != null
-                    ? l10n.currentVersionPrefix(
-                        settings.currentVersion.toString(),
-                      )
-                    : l10n.currentVersionUnknown,
-              ),
-              Text(
-                newestVersion != null
-                    ? l10n.latestVersionPrefix(newestVersion.toString())
-                    : "",
               ),
               Divider(),
               TextButton(

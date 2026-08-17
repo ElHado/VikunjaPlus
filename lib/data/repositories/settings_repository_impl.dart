@@ -18,16 +18,6 @@ class SettingsRepositoryImpl implements SettingsRepository {
   }
 
   @override
-  Future<bool> getVersionNotifications() {
-    return _datasource.getVersionNotifications();
-  }
-
-  @override
-  Future<void> setVersionNotifications(bool value) {
-    return _datasource.setVersionNotifications(value);
-  }
-
-  @override
   Future<int> getRefreshInterval() {
     return _datasource.getRefreshInterval();
   }

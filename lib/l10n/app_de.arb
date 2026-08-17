@@ -28,9 +28,7 @@
   "theme": "Design",
   "dynamicColors": "Dynamische Farben",
   "ignoreCertificates": "Zertifikate ignorieren",
-  "getVersionNotifications": "Versionsbenachrichtigungen erhalten",
   "sendTestNotification": "Test-Benachrichtigung senden",
-  "checkForLatestVersion": "Nach neuester Version suchen",
   "defaultProject": "Standard-Projekt",
   "none": "Keine",
   "description": "Beschreibung",
@@ -78,17 +76,6 @@
   "reminder": "Erinnerung",
   "addReminder": "Erinnerung hinzufügen",
   "setColor": "Farbe auswählen",
-  "currentVersionPrefix": "Aktuelle Version: {version}",
-  "@currentVersionPrefix": {
-    "description": "Label showing the current app version.",
-    "placeholders": { "version": { "type": "String" } }
-  },
-  "currentVersionUnknown": "Aktuelle Version: -",
-  "latestVersionPrefix": "Neueste Version: {version}",
-  "@latestVersionPrefix": {
-    "description": "Label showing the latest available version.",
-    "placeholders": { "version": { "type": "String" } }
-  },
   "noNotificationPermission": "Keine Benachrichtigungsberechtigung!",
   "onlyShowTasksWithDueDate": "Nur mit Fälligkeitsdatum",
   "noTasks": "Keine Aufgaben",
@@ -97,12 +84,6 @@
   "homeTab": "Start",
   "projectsTab": "Projekte",
   "settingsTab": "Einstellungen",
-  "viewOnGithub": "Auf GitHub ansehen",
-  "newVersionAvailable": "Neue Version verfügbar: {version}",
-  "@newVersionAvailable": {
-    "description": "Snackbar text notifying the user about a new version.",
-    "placeholders": { "version": { "type": "String" } }
-  },
   "unsavedChangesTitle": "Ungespeicherte Änderungen!",
   "unsavedChangesMessage": "Möchtest du diese Änderungen verwerfen?",
   "dismiss": "Verwerfen",

@@ -26,9 +26,6 @@ class SettingsController extends _$SettingsController {
     var ignoreCertificates = await ref
         .read(settingsRepositoryProvider)
         .getIgnoreCertificates();
-    var versionNotification = await ref
-        .read(settingsRepositoryProvider)
-        .getVersionNotifications();
     var refreshInterval = await ref
         .read(settingsRepositoryProvider)
         .getRefreshInterval();
@@ -36,10 +33,6 @@ class SettingsController extends _$SettingsController {
     var dynamicColor = await ref
         .read(settingsRepositoryProvider)
         .getDynamicColors();
-
-    var version = await ref
-        .read(versionRepositoryProvider)
-        .getCurrentVersionTag();
 
     final user = ref.read(currentUserProvider)!;
     final projectsResponse = await ref.read(projectRepositoryProvider).getAll();
@@ -52,11 +45,9 @@ class SettingsController extends _$SettingsController {
       user,
       projects,
       ignoreCertificates,
-      versionNotification,
       refreshInterval,
       themeMode,
       dynamicColor,
-      version,
     );
   }
 
@@ -94,11 +85,6 @@ class SettingsController extends _$SettingsController {
     state = AsyncData(await getAll());
 
     updateWorkManagerDuration();
-  }
-
-  Future<void> setVersionNotifications(bool value) async {
-    ref.read(settingsRepositoryProvider).setVersionNotifications(value);
-    state = AsyncData(await getAll());
   }
 
   void updateWorkManagerDuration() async {

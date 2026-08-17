@@ -5,10 +5,6 @@ abstract class SettingsRepository {
 
   Future<void> setIgnoreCertificates(bool value);
 
-  Future<bool> getVersionNotifications();
-
-  Future<void> setVersionNotifications(bool value);
-
   Future<int> getRefreshInterval();
 
   Future<void> setRefreshInterval(int minutes);

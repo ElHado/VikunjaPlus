@@ -187,24 +187,6 @@ final settingsDataSourceProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef SettingsDataSourceRef = AutoDisposeProviderRef<SettingsDatasource>;
-String _$versionDataSourceHash() => r'e349ff678eda68b94fbc34c5ffe6bdae0603da84';
-
-/// See also [versionDataSource].
-@ProviderFor(versionDataSource)
-final versionDataSourceProvider =
-    AutoDisposeProvider<VersionDataSource>.internal(
-      versionDataSource,
-      name: r'versionDataSourceProvider',
-      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$versionDataSourceHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef VersionDataSourceRef = AutoDisposeProviderRef<VersionDataSource>;
 String _$taskCommentDataSourceHash() =>
     r'a5c3bcd4ee6ccdf2f1a703c6dfe6791ff7f32cc1';
 

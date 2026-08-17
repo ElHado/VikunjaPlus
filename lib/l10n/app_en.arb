@@ -28,9 +28,7 @@
   "theme": "Theme",
   "dynamicColors": "Dynamic Colors",
   "ignoreCertificates": "Ignore Certificates",
-  "getVersionNotifications": "Get Version Notifications",
   "sendTestNotification": "Send test notification",
-  "checkForLatestVersion": "Check for latest version",
   "defaultProject": "Default Project",
   "none": "None",
   "description": "Description",
@@ -78,17 +76,6 @@
   "reminder": "Reminder",
   "addReminder": "Add a reminder",
   "setColor": "Set Color",
-  "currentVersionPrefix": "Current version: {version}",
-  "@currentVersionPrefix": {
-    "description": "Label showing the current app version.",
-    "placeholders": { "version": { "type": "String" } }
-  },
-  "currentVersionUnknown": "Current version: -",
-  "latestVersionPrefix": "Latest version: {version}",
-  "@latestVersionPrefix": {
-    "description": "Label showing the latest available version.",
-    "placeholders": { "version": { "type": "String" } }
-  },
   "noNotificationPermission": "No notification permission!",
   "onlyShowTasksWithDueDate": "Only show tasks with due date",
   "noTasks": "No tasks",
@@ -97,12 +84,6 @@
   "homeTab": "Home",
   "projectsTab": "Projects",
   "settingsTab": "Settings",
-  "viewOnGithub": "View on Github",
-  "newVersionAvailable": "New version available: {version}",
-  "@newVersionAvailable": {
-    "description": "Snackbar text notifying the user about a new version.",
-    "placeholders": { "version": { "type": "String" } }
-  },
   "unsavedChangesTitle": "You have unsaved changes!",
   "unsavedChangesMessage": "Would you like to dismiss those changes?",
   "dismiss": "Dismiss",

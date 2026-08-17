@@ -18,19 +18,6 @@ class SettingsDatasource {
     return _storage.write(key: "ignore-certificates", value: value ? "1" : "0");
   }
 
-  Future<bool> getVersionNotifications() {
-    return _storage
-        .read(key: "get-version-notifications")
-        .then((value) => value == "1");
-  }
-
-  Future<void> setVersionNotifications(bool value) {
-    return _storage.write(
-      key: "get-version-notifications",
-      value: value ? "1" : "0",
-    );
-  }
-
   Future<int> getRefreshInterval() {
     return _storage
         .read(key: "workmanager-duration")
