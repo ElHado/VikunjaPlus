@@ -5,6 +5,45 @@ Alle nennenswerten Änderungen an diesem Fork werden hier dokumentiert.
 Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung an [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.2.2] - 2026-08-16
+
+### Behoben
+
+- **HTML-Tags in Benachrichtigungen entfernt**
+  Task-Beschreibungen werden von Vikunja als HTML gespeichert. Die Tags
+  wurden nun sichtbar in Benachrichtigungen angezeigt. Ein HTML-Stripper
+  bereinigt den Text vor der Anzeige.
+
+### Entfernt
+
+- **Sentry komplett entfernt** – Der hartkodierte DSN gehörte den
+  Original-Entwicklern. Sentry-Option aus Einstellungen, Sentry-Dialog
+  beim Login, Sentry-Initialisierung und `sentry_flutter`-Paket wurden
+  entfernt.
+- **Versions-Check entfernt** – Kein GitHub-API-Call mehr gegen das
+  Original-Repo. Die Schaltfläche "Nach neuester Version suchen", die
+  Versions-Anzeige in den Einstellungen und der Update-Snackbar auf der
+  Startseite entfallen. Bei Veröffentlichung über Play Store / F-Droid
+  übernehmen die Stores die Update-Benachrichtigung.
+- **"Versionsbenachrichtigungen erhalten"** – Checkbox in Einstellungen
+  entfernt (nicht mehr nötig ohne Versions-Check).
+- **"Auf GitHub ansehen"** – Link aus Update-Snackbar entfernt.
+
+### Geändert
+
+- **Hintergrund-Aktualisierungsintervall:** Textfeld + Save-Button durch
+  Schieberegler ersetzt (15 Min bis 6 Stunden, Ausstufe 0). Speichert
+  automatisch beim Loslassen.
+- **Default Refresh-Intervall:** Jetzt 30 Minuten (war 0 = aus), damit
+  Erinnerungen out-of-the-box funktionieren.
+- **Benachrichtigungen:** Titel ist jetzt der Task-Name (statt
+  "Due Reminder"). Text ist die Task-Beschreibung (statt statischem
+  Text). Action-Button "Done" → "Erledigt", Android-Channel-Namen
+  lokalisiert, alle Notification-Strings über ARB übersetzbar.
+- **Aufgabensortierung:** Neue Option im Projekt-Bearbeiten-Dialog
+  "Nach Fälligkeit sortieren" (aufsteigend). Standard bleibt manuelle
+  Sortierung.
+
 ## [0.2.1] - 2026-08-16
 
 ### Behoben
