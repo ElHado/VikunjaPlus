@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:vikunja_app/core/di/network_provider.dart';
 import 'package:vikunja_app/core/di/repository_provider.dart';
 import 'package:vikunja_app/core/network/response.dart';
@@ -16,7 +15,6 @@ import 'package:vikunja_app/domain/entities/auth_model.dart';
 import 'package:vikunja_app/domain/entities/server.dart';
 import 'package:vikunja_app/domain/entities/version.dart';
 import 'package:vikunja_app/l10n/gen/app_localizations.dart';
-import 'package:vikunja_app/presentation/widgets/sentry_dialog.dart';
 import 'package:vikunja_app/presentation/widgets/version_mismatch_dialog.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
@@ -51,15 +49,6 @@ class LoginPageState extends ConsumerState<LoginPage> {
           .read(settingsRepositoryProvider)
           .getPastServers();
       setState(() => pastServers = pastSevers);
-
-      var sentryDialogShown = await ref
-          .read(settingsRepositoryProvider)
-          .getSentryDialogShown();
-
-      if (!sentryDialogShown) {
-        ref.read(settingsRepositoryProvider).setSentryDialogShown(true);
-        return _showSentryDialog();
-      }
     });
   }
 
@@ -68,23 +57,6 @@ class LoginPageState extends ConsumerState<LoginPage> {
     _oauthService.cancelAuthorize();
     _serverController.dispose();
     super.dispose();
-  }
-
-  Future<void> _showSentryDialog() {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return SentryDialog(
-          onAccepts: () {
-            ref.read(settingsRepositoryProvider).setSentryEnabled(true);
-          },
-          onRefuse: () {
-            ref.read(settingsRepositoryProvider).setSentryEnabled(false);
-          },
-        );
-      },
-    );
   }
 
   @override
@@ -474,13 +446,6 @@ class LoginPageState extends ConsumerState<LoginPage> {
 
       // Server validated — persist it
       ref.read(settingsRepositoryProvider).saveServer(server);
-
-      Sentry.configureScope(
-        (scope) => scope.setTag(
-          'server.version',
-          info.toSuccess().body.version ?? "-",
-        ),
-      );
 
       Version? serverVersion = Version.fromServerString(
         info.toSuccess().body.version ?? "-",

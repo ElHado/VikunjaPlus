@@ -32,9 +32,6 @@ class SettingsController extends _$SettingsController {
     var refreshInterval = await ref
         .read(settingsRepositoryProvider)
         .getRefreshInterval();
-    var sentryEnabled = await ref
-        .read(settingsRepositoryProvider)
-        .getSentryEnabled();
     var themeMode = await ref.read(settingsRepositoryProvider).getThemeMode();
     var dynamicColor = await ref
         .read(settingsRepositoryProvider)
@@ -55,7 +52,6 @@ class SettingsController extends _$SettingsController {
       user,
       projects,
       ignoreCertificates,
-      sentryEnabled,
       versionNotification,
       refreshInterval,
       themeMode,
@@ -82,11 +78,6 @@ class SettingsController extends _$SettingsController {
     if (themeModel != null) {
       ref.read(themeProvider.notifier).set(themeModel);
     }
-    state = AsyncData(await getAll());
-  }
-
-  Future<void> setSentryEnabled(bool value) async {
-    ref.read(settingsRepositoryProvider).setSentryEnabled(value);
     state = AsyncData(await getAll());
   }
 

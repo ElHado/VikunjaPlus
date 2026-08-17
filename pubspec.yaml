@@ -35,8 +35,6 @@ dependencies:
   path_provider: ^2.1.5
   permission_handler: ^12.0.1
   riverpod_annotation: ^2.6.1
-  sentry_flutter: ^9.6.0
-  sentry_logging: ^9.6.0
   timezone: ^0.10.0
   app_links: ^6.4.0
   crypto: ^3.0.6

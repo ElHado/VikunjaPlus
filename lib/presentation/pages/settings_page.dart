@@ -144,17 +144,6 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
                 },
               ),
               Divider(),
-              CheckboxListTile(
-                title: Text(l10n.enableSentry),
-                subtitle: Text(l10n.sentryHelp),
-                value: settings.sentryEnabled,
-                onChanged: (value) {
-                  ref
-                      .read(settingsControllerProvider.notifier)
-                      .setSentryEnabled(value ?? false);
-                },
-              ),
-              Divider(),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16),
                 child: Column(

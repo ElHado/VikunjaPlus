@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:vikunja_app/core/di/network_provider.dart';
 import 'package:vikunja_app/core/di/repository_provider.dart';
 import 'package:vikunja_app/core/network/response.dart';
@@ -45,11 +44,6 @@ Future<InitOutcome> _runInit(Ref ref) async {
       .read(serverRepositoryProvider)
       .getInfo();
   if (info.isSuccessful) {
-    Sentry.configureScope(
-      (scope) =>
-          scope.setTag('server.version', info.toSuccess().body.version ?? '-'),
-    );
-
     serverVersion = Version.fromServerString(
       info.toSuccess().body.version ?? '-',
     );

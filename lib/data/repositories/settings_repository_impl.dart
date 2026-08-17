@@ -18,16 +18,6 @@ class SettingsRepositoryImpl implements SettingsRepository {
   }
 
   @override
-  Future<bool> getSentryEnabled() {
-    return _datasource.getSentryEnabled();
-  }
-
-  @override
-  Future<void> setSentryEnabled(bool value) {
-    return _datasource.setSentryEnabled(value);
-  }
-
-  @override
   Future<bool> getVersionNotifications() {
     return _datasource.getVersionNotifications();
   }
@@ -105,16 +95,6 @@ class SettingsRepositoryImpl implements SettingsRepository {
   @override
   Future<void> setPastServers(List<String> server) {
     return _datasource.setPastServers(server);
-  }
-
-  @override
-  Future<bool> getSentryDialogShown() {
-    return _datasource.getSentryDialogShown();
-  }
-
-  @override
-  Future<void> setSentryDialogShown(bool value) {
-    return _datasource.setSentryDialogShown(value);
   }
 
   @override

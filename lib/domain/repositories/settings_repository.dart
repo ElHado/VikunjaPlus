@@ -5,10 +5,6 @@ abstract class SettingsRepository {
 
   Future<void> setIgnoreCertificates(bool value);
 
-  Future<bool> getSentryEnabled();
-
-  Future<void> setSentryEnabled(bool value);
-
   Future<bool> getVersionNotifications();
 
   Future<void> setVersionNotifications(bool value);
@@ -39,10 +35,6 @@ abstract class SettingsRepository {
   Future<List<String>> getPastServers();
 
   Future<void> setPastServers(List<String> server);
-
-  Future<bool> getSentryDialogShown();
-
-  Future<void> setSentryDialogShown(bool value);
 
   Future<void> saveUserToken(String? token);
 

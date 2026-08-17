@@ -18,14 +18,6 @@ class SettingsDatasource {
     return _storage.write(key: "ignore-certificates", value: value ? "1" : "0");
   }
 
-  Future<bool> getSentryEnabled() {
-    return _storage.read(key: "sentry-enabled").then((value) => value == "1");
-  }
-
-  Future<void> setSentryEnabled(bool value) {
-    return _storage.write(key: "sentry-enabled", value: value ? "1" : "0");
-  }
-
   Future<bool> getVersionNotifications() {
     return _storage
         .read(key: "get-version-notifications")
@@ -133,16 +125,6 @@ class SettingsDatasource {
 
   Future<void> setPastServers(List<String> server) {
     return _storage.write(key: "recent-servers", value: jsonEncode(server));
-  }
-
-  Future<bool> getSentryDialogShown() {
-    return _storage
-        .read(key: "sentry-modal-shown")
-        .then((value) => value == "1");
-  }
-
-  Future<void> setSentryDialogShown(bool value) {
-    return _storage.write(key: "sentry-modal-shown", value: value ? "1" : "0");
   }
 
   Future<String?> getServer() {

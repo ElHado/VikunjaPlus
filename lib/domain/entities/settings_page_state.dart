@@ -8,7 +8,6 @@ class SettingsPageState {
   List<Project> projects;
 
   bool ignoreCertificates;
-  bool sentryEnabled;
   bool versionNotifications;
 
   int refreshInterval;
@@ -22,7 +21,6 @@ class SettingsPageState {
     this.user,
     this.projects,
     this.ignoreCertificates,
-    this.sentryEnabled,
     this.versionNotifications,
     this.refreshInterval,
     this.themeMode,

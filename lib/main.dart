@@ -12,8 +12,6 @@ import 'package:home_widget/home_widget.dart' show HomeWidget;
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
-import 'package:sentry_logging/sentry_logging.dart';
 import 'package:vikunja_app/l10n/gen/app_localizations.dart';
 import 'package:vikunja_app/core/di/theme_provider.dart';
 import 'package:vikunja_app/core/di/locale_provider.dart';
@@ -28,20 +26,8 @@ import 'core/background_work.dart';
 final globalSnackbarKey = GlobalKey<ScaffoldMessengerState>();
 final globalNavigatorKey = GlobalKey<NavigatorState>();
 
-// Network error codes to ignore in Sentry reporting (Cronet exceptions)
-const _ignoredNetworkErrors = [
-  'ERR_ADDRESS_UNREACHABLE',
-  'ERR_NETWORK_CHANGED',
-  'ERR_INTERNET_DISCONNECTED',
-  'ERR_CONNECTION_REFUSED',
-  'ERR_CONNECTION_RESET',
-  'ERR_CONNECTION_CLOSED',
-  'ERR_CONNECTION_TIMED_OUT',
-  'ERR_NAME_NOT_RESOLVED',
-];
-
 void main() async {
-  SentryWidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
 
   var notifDenies = await Permission.notification.isDenied;
   if (notifDenies) {
@@ -85,36 +71,7 @@ void main() async {
     developer.log('Failed to initialise widget Callback');
   }
 
-  var sentryEnabled = await settingsDatasource.getSentryEnabled();
-  if (sentryEnabled) {
-    await SentryFlutter.init((options) {
-      options.dsn =
-          'https://a09618e3bb30e03b93233c21973df869@o1047380.ingest.us.sentry.io/4507995557134336';
-      options.addIntegration(LoggingIntegration());
-      options.enableLogs = true;
-      options.tracesSampleRate = 1.0;
-      // profiling (profilesSampleRate) entfernt: experimentelle API,
-      // führt zu Analyzer-Warnung und ist für den Fork nicht benötigt.
-      options.beforeSend = (event, hint) {
-        // Filter out network unreachability errors (Cronet exceptions)
-        // These are Chromium/Cronet network errors that appear in format: "net::ERR_..."
-        final exceptionMessage = event.throwable?.toString() ?? '';
-
-        // Only filter Cronet-specific exceptions
-        if (exceptionMessage.contains('Cronet exception') ||
-            exceptionMessage.contains('CronetUrlRequest')) {
-          for (final error in _ignoredNetworkErrors) {
-            if (exceptionMessage.contains('net::$error')) {
-              return null; // Don't send to Sentry
-            }
-          }
-        }
-        return event;
-      };
-    }, appRunner: () => runApp(ProviderScope(child: VikunjaApp())));
-  } else {
-    runApp(ProviderScope(child: VikunjaApp()));
-  }
+  runApp(ProviderScope(child: VikunjaApp()));
 }
 
 class VikunjaApp extends ConsumerWidget {
