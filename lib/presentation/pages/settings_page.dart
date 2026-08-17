@@ -7,6 +7,7 @@ import 'package:vikunja_app/core/di/network_provider.dart';
 import 'package:vikunja_app/core/di/notification_provider.dart';
 import 'package:vikunja_app/core/di/repository_provider.dart';
 import 'package:vikunja_app/core/theming/theme_mode.dart';
+import 'package:vikunja_app/core/utils/constants.dart';
 import 'package:vikunja_app/core/utils/language_autonyms.dart';
 import 'package:vikunja_app/core/utils/user_extensions.dart';
 import 'package:vikunja_app/domain/entities/project.dart';
@@ -201,6 +202,18 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
                 child: Text(l10n.sendTestNotification),
               ),
               Divider(),
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 8),
+                child: Center(
+                  child: Text(
+                    'v$appVersion',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).textTheme.bodySmall?.color
+                          ?.withValues(alpha: 0.5),
+                    ),
+                  ),
+                ),
+              ),
               TextButton(
                 onPressed: () {
                   ref.read(settingsRepositoryProvider).saveServer(null);

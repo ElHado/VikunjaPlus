@@ -8,3 +8,5 @@ const vStandardVerticalPadding = EdgeInsets.symmetric(vertical: 5.0);
 const String repo = "https://github.com/go-vikunja/app/releases/latest";
 
 const String userAgent = 'Vikunja Mobile App';
+
+const String appVersion = '0.2.2';

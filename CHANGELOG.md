@@ -13,36 +13,29 @@ die Versionierung an [Semantic Versioning](https://semver.org/lang/de/).
   Task-Beschreibungen werden von Vikunja als HTML gespeichert. Die Tags
   wurden nun sichtbar in Benachrichtigungen angezeigt. Ein HTML-Stripper
   bereinigt den Text vor der Anzeige.
+- **Runtime-Absturz beim App-Start behoben**
+  `AppLocalizations.of(context)` wurde in `initNotifications()` von
+  `initState()` aus aufgerufen, bevor der Widget-Baum vollständig war.
+  Jetzt wird der Default-Konstruktor von `NotificationHandler` genutzt.
 
 ### Entfernt
 
 - **Sentry komplett entfernt** – Der hartkodierte DSN gehörte den
-  Original-Entwicklern. Sentry-Option aus Einstellungen, Sentry-Dialog
-  beim Login, Sentry-Initialisierung und `sentry_flutter`-Paket wurden
-  entfernt.
+  Original-Entwicklern.
 - **Versions-Check entfernt** – Kein GitHub-API-Call mehr gegen das
-  Original-Repo. Die Schaltfläche "Nach neuester Version suchen", die
-  Versions-Anzeige in den Einstellungen und der Update-Snackbar auf der
-  Startseite entfallen. Bei Veröffentlichung über Play Store / F-Droid
-  übernehmen die Stores die Update-Benachrichtigung.
-- **"Versionsbenachrichtigungen erhalten"** – Checkbox in Einstellungen
-  entfernt (nicht mehr nötig ohne Versions-Check).
-- **"Auf GitHub ansehen"** – Link aus Update-Snackbar entfernt.
+  Original-Repo.
 
 ### Geändert
 
 - **Hintergrund-Aktualisierungsintervall:** Textfeld + Save-Button durch
-  Schieberegler ersetzt (15 Min bis 6 Stunden, Ausstufe 0). Speichert
-  automatisch beim Loslassen.
-- **Default Refresh-Intervall:** Jetzt 30 Minuten (war 0 = aus), damit
-  Erinnerungen out-of-the-box funktionieren.
-- **Benachrichtigungen:** Titel ist jetzt der Task-Name (statt
-  "Due Reminder"). Text ist die Task-Beschreibung (statt statischem
-  Text). Action-Button "Done" → "Erledigt", Android-Channel-Namen
-  lokalisiert, alle Notification-Strings über ARB übersetzbar.
+  Schieberegler ersetzt. Default auf 30 Minuten (war 0 = aus).
+- **Benachrichtigungen:** Titel ist jetzt der Task-Name, Text die
+  Task-Beschreibung. Action-Button "Done" → "Erledigt", lokalisiert.
 - **Aufgabensortierung:** Neue Option im Projekt-Bearbeiten-Dialog
-  "Nach Fälligkeit sortieren" (aufsteigend). Standard bleibt manuelle
-  Sortierung.
+  "Nach Fälligkeit sortieren" (umschaltbar).
+- **Android-Tooling:** Kotlin von 2.2.20 auf 2.3.20 aktualisiert.
+- **Einstellungen:** App-Version wird jetzt über dem Abmelden-Button
+  angezeigt.
 
 ## [0.2.1] - 2026-08-16
 
