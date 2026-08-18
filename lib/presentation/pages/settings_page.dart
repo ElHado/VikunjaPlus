@@ -207,6 +207,32 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
                 child: Center(
                   child: Column(
                   children: [
+                    FutureBuilder<String?>(
+                      future: ref.read(settingsRepositoryProvider).getServer(),
+                      builder: (context, snapshot) {
+                        final serverUrl = snapshot.data;
+                        if (serverUrl == null || serverUrl.isEmpty) {
+                          return const SizedBox.shrink();
+                        }
+                        return Padding(
+                          padding: EdgeInsets.only(bottom: 2),
+                          child: Text(
+                            serverUrl,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodySmall
+                                ?.copyWith(
+                              color: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.color
+                                  ?.withValues(alpha: 0.35),
+                              fontSize: 11,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
                     Text(
                       'v$appVersion',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
