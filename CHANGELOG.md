@@ -5,6 +5,22 @@ Alle nennenswerten Änderungen an diesem Fork werden hier dokumentiert.
 Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung an [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.2.3] - 2026-08-18
+
+### Geändert
+
+- **App-Name:** App heißt jetzt **Vikunja+** (Debug: *Vikunja+ (Dev)*).
+- **Aufgeräumt:** Nicht mehr verwendete Konstanten entfernt (`repo`,
+  `vStandardVerticalPadding`)
+- **LICENSE:** Auf ElHado + 2026 aktualisiert
+
+### Hinzugefügt
+
+- **Einstellungen:** Server-URL wird über der Versionsnummer angezeigt
+- **Einstellungen:** Fork-Hinweis ist jetzt klickbar (öffnet go-vikunja/app auf GitHub)
+- **Einstellungen:** MIT License-Hinweis unter dem Fork-Link
+- **Einstellungen:** App-Version wird über dem Abmelden-Button angezeigt
+
 ## [0.2.2] - 2026-08-17
 
 ### Behoben
@@ -34,17 +50,6 @@ die Versionierung an [Semantic Versioning](https://semver.org/lang/de/).
 - **Aufgabensortierung:** Neue Option im Projekt-Bearbeiten-Dialog
   "Nach Fälligkeit sortieren" (umschaltbar).
 - **Android-Tooling:** Kotlin von 2.2.20 auf 2.3.20 aktualisiert.
-- **App-Name:** App heißt jetzt **Vikunja+** (Debug: *Vikunja+ (Dev)*).
-- **Einstellungen:** App-Version wird jetzt über dem Abmelden-Button
-  angezeigt, inklusive Fork-Hinweis (go-vikunja/app v0.1.8).
-- **Aufgeräumt:** Nicht mehr verwendete Konstanten entfernt (`repo`,
-  `vStandardVerticalPadding`)
-
-### Hinzugefügt
-
-- **Einstellungen:** Server-URL wird über der Versionsnummer angezeigt
-- **Einstellungen:** Fork-Hinweis ist jetzt klickbar (öffnet go-vikunja/app auf GitHub)
-- **Einstellungen:** MIT License-Hinweis unter dem Fork-Link
 
 ## [0.2.1] - 2026-08-16
 
