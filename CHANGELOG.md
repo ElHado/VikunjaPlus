@@ -40,6 +40,12 @@ die Versionierung an [Semantic Versioning](https://semver.org/lang/de/).
 - **Aufgeräumt:** Nicht mehr verwendete Konstanten entfernt (`repo`,
   `vStandardVerticalPadding`)
 
+### Hinzugefügt
+
+- **Einstellungen:** Server-URL wird über der Versionsnummer angezeigt
+- **Einstellungen:** Fork-Hinweis ist jetzt klickbar (öffnet go-vikunja/app auf GitHub)
+- **Einstellungen:** MIT License-Hinweis unter dem Fork-Link
+
 ## [0.2.1] - 2026-08-16
 
 ### Behoben
