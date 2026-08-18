@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:vikunja_app/core/utils/date_extensions.dart';
 import 'package:vikunja_app/domain/entities/new_task_due.dart';
-import 'package:vikunja_app/presentation/widgets/date_time_field.dart';
 import 'package:vikunja_app/l10n/gen/app_localizations.dart';
 
 class AddTaskDialog extends StatefulWidget {
@@ -19,6 +17,9 @@ class AddTaskDialogState extends State<AddTaskDialog> {
   DateTime? dueDate;
   var textController = TextEditingController();
 
+  static const _timePresets = [8, 12, 15, 18, 21];
+  int? _selectedHour;
+
   @override
   void initState() {
     super.initState();
@@ -29,9 +30,89 @@ class AddTaskDialogState extends State<AddTaskDialog> {
     }
   }
 
+  void _onDaySelected(NewTaskDue day, DateTime now) {
+    if (day == NewTaskDue.none || day == NewTaskDue.custom) {
+      setState(() {
+        newTaskDue = day;
+        dueDate = null;
+        _selectedHour = null;
+      });
+      if (day == NewTaskDue.custom) {
+        _openCustomPicker();
+      }
+      return;
+    }
+
+    setState(() {
+      newTaskDue = day;
+      final date = day.calculateDate(now)!;
+      // Default time: nearest hour
+      _selectedHour = null;
+      dueDate = _applyTime(date, _calculateNearestHour(now));
+    });
+  }
+
+  void _onTimeSelected(int hour) {
+    if (dueDate == null) return;
+    setState(() {
+      _selectedHour = hour;
+      dueDate = _applyTime(dueDate!, hour);
+    });
+  }
+
+  DateTime _applyTime(DateTime date, int hour) {
+    return DateTime(date.year, date.month, date.day, hour, 0, 0);
+  }
+
+  int _calculateNearestHour(DateTime now) {
+    if (now.hour <= 9) return 9;
+    if (now.hour < 12) return 12;
+    if (now.hour < 15) return 15;
+    if (now.hour < 18) return 18;
+    if (now.hour < 21) return 21;
+    return 9;
+  }
+
+  Future<void> _openCustomPicker() async {
+    final now = DateTime.now();
+    var selectedDate = await showDialog<DateTime>(
+      context: context,
+      builder: (_) => DatePickerDialog(
+        initialDate: now,
+        firstDate: DateTime(1900),
+        lastDate: DateTime(2100),
+        initialCalendarMode: DatePickerMode.day,
+      ),
+    );
+
+    if (!mounted || selectedDate == null) return;
+
+    var selectedTime = await showDialog<TimeOfDay>(
+      context: context,
+      builder: (_) => TimePickerDialog(
+        initialTime: TimeOfDay.fromDateTime(now),
+      ),
+    );
+
+    if (!mounted || selectedTime == null) return;
+
+    setState(() {
+      newTaskDue = NewTaskDue.custom;
+      _selectedHour = null;
+      dueDate = DateTime(
+        selectedDate.year,
+        selectedDate.month,
+        selectedDate.day,
+        selectedTime.hour,
+        selectedTime.minute,
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    var dateTime = DateTime.now();
+    final now = DateTime.now();
+    final l10n = AppLocalizations.of(context);
 
     return AlertDialog(
       scrollable: true,
@@ -45,93 +126,73 @@ class AddTaskDialogState extends State<AddTaskDialog> {
             maxLines: null,
             autofocus: true,
             decoration: InputDecoration(
-              labelText: AppLocalizations.of(context).newTaskName,
-              hintText: AppLocalizations.of(context).newTaskExample,
+              labelText: l10n.newTaskName,
+              hintText: l10n.newTaskExample,
             ),
             controller: textController,
           ),
-          Padding(
-            padding: const EdgeInsets.only(top: 16.0, bottom: 8.0),
-            child: Text(AppLocalizations.of(context).dueDate),
-          ),
+          const SizedBox(height: 16),
+          Text(l10n.dueDate, style: Theme.of(context).textTheme.titleSmall),
+          const SizedBox(height: 8),
           Wrap(
             spacing: 8,
+            runSpacing: 4,
             children: [
-              taskDueList(
-                AppLocalizations.of(context).dueOptionNone,
-                NewTaskDue.none,
-              ),
-              if (dateTime.hour < 21)
-                taskDueList(
-                  AppLocalizations.of(context).dueOptionToday,
-                  NewTaskDue.today,
-                ),
-              taskDueList(
-                AppLocalizations.of(context).dueOptionTomorrow,
-                NewTaskDue.tomorrow,
-              ),
-              taskDueList(
-                AppLocalizations.of(context).dueOptionNextMonday,
-                NewTaskDue.nextMonday,
-              ),
-              if (dateTime.weekday != DateTime.sunday || dateTime.hour < 21)
-                taskDueList(
-                  AppLocalizations.of(context).dueOptionThisWeekend,
-                  NewTaskDue.weekend,
-                ),
-              taskDueList(
-                AppLocalizations.of(context).dueOptionLaterThisWeek,
-                NewTaskDue.laterThisWeek,
-              ),
-              taskDueList(
-                AppLocalizations.of(context).dueInOneWeek,
-                NewTaskDue.nextWeek,
-              ),
-              taskDueList(
-                AppLocalizations.of(context).dueOptionCustom,
-                NewTaskDue.custom,
-              ),
+              _dayChip(l10n.dueOptionNone, NewTaskDue.none),
+              _dayChip(l10n.dueOptionToday, NewTaskDue.today),
+              _dayChip(l10n.dueOptionTomorrow, NewTaskDue.tomorrow),
+              _dayChip(l10n.dueInOneWeek, NewTaskDue.nextWeek),
+              _dayChip(l10n.dueOptionNextMonday, NewTaskDue.nextMonday),
             ],
           ),
-          if (newTaskDue == NewTaskDue.custom)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: VikunjaDateTimeField(
-                label: AppLocalizations.of(context).enterExactTime,
-                onChanged: (value) {
-                  setState(() => newTaskDue = NewTaskDue.custom);
-                  dueDate = value;
-                },
+          if (newTaskDue != NewTaskDue.none && newTaskDue != NewTaskDue.custom)
+            ...[
+              const SizedBox(height: 12),
+              Text(l10n.dueTime, style: Theme.of(context).textTheme.titleSmall),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                runSpacing: 4,
+                children: [
+                  for (final hour in _timePresets)
+                    _timeChip('${hour.toString().padLeft(2, '0')}:00', hour),
+                ],
+              ),
+            ],
+          if (newTaskDue != NewTaskDue.custom) ...[
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                icon: const Icon(Icons.date_range, size: 18),
+                label: Text(l10n.dueOptionCustom),
+                onPressed: () => _onDaySelected(NewTaskDue.custom, now),
               ),
             ),
-          if (newTaskDue != NewTaskDue.custom && dueDate != null)
+          ],
+          if (dueDate != null)
             Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 8.0,
-                vertical: 16,
-              ),
+              padding: const EdgeInsets.only(top: 12),
               child: Row(
                 children: [
-                  Icon(Icons.date_range),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 16.0),
-                    child: Text(
-                      dueDate!.formatShort(),
-                      style: Theme.of(context).textTheme.bodyLarge,
-                    ),
+                  const Icon(Icons.date_range, size: 18),
+                  const SizedBox(width: 8),
+                  Text(
+                    _formatDueDate(dueDate!),
+                    style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ],
               ),
             ),
         ],
       ),
-      actions: <Widget>[
+      actions: [
         TextButton(
-          child: Text(AppLocalizations.of(context).cancel),
+          child: Text(l10n.cancel),
           onPressed: () => Navigator.pop(context),
         ),
         TextButton(
-          child: Text(AppLocalizations.of(context).add),
+          child: Text(l10n.add),
           onPressed: () {
             if (textController.text.isNotEmpty) {
               widget.onAddTask(textController.text, dueDate);
@@ -143,21 +204,27 @@ class AddTaskDialogState extends State<AddTaskDialog> {
     );
   }
 
-  Widget taskDueList(String name, NewTaskDue thisNewTaskDue) {
+  Widget _dayChip(String label, NewTaskDue value) {
     return ChoiceChip(
-      label: Text(name),
-      selected: newTaskDue == thisNewTaskDue,
-      onSelected: (value) {
-        newTaskDue = thisNewTaskDue;
-        setState(() {
-          if (newTaskDue == NewTaskDue.custom ||
-              newTaskDue == NewTaskDue.none) {
-            dueDate = null;
-          } else {
-            dueDate = newTaskDue.calculateDate(DateTime.now());
-          }
-        });
-      },
+      label: Text(label),
+      selected: newTaskDue == value,
+      onSelected: (_) => _onDaySelected(value, DateTime.now()),
     );
+  }
+
+  Widget _timeChip(String label, int hour) {
+    return ChoiceChip(
+      label: Text(label),
+      selected: _selectedHour == hour,
+      onSelected: (_) => _onTimeSelected(hour),
+    );
+  }
+
+  String _formatDueDate(DateTime dt) {
+    final day = dt.day.toString().padLeft(2, '0');
+    final month = dt.month.toString().padLeft(2, '0');
+    final hour = dt.hour.toString().padLeft(2, '0');
+    final minute = dt.minute.toString().padLeft(2, '0');
+    return '$day.$month.${dt.year} $hour:$minute';
   }
 }

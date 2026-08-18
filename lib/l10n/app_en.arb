@@ -187,6 +187,7 @@
   "dueOptionThisWeekend": "This Weekend",
   "dueOptionLaterThisWeek": "Later this week",
   "dueOptionCustom": "Custom",
+  "dueTime": "Time",
   "oauthBrowserLaunchFailed": "Could not open the browser for authentication",
   "oauthStateMismatch": "Authentication failed: security validation error",
   "oauthNoAuthorizationCode": "Authentication was not completed",

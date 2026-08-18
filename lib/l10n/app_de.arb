@@ -187,6 +187,7 @@
   "dueOptionThisWeekend": "Dieses Wochenende",
   "dueOptionLaterThisWeek": "Später diese Woche",
   "dueOptionCustom": "Benutzerdefiniert",
+  "dueTime": "Uhrzeit",
   "oauthBrowserLaunchFailed": "Konnte den Browser für die Authentifizierung nicht öffnen",
   "oauthStateMismatch": "Authentifizierung fehlgeschlagen: Sicherheitsvalidierungsfehler",
   "oauthNoAuthorizationCode": "Authentifizierung wurde nicht abgeschlossen",
