@@ -5,6 +5,16 @@ Alle nennenswerten Änderungen an diesem Fork werden hier dokumentiert.
 Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung an [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.2.4] - 2026-08-18
+
+### Geändert
+
+- **Aufgaben-Dialog:** Neue Aufteilung in Tag-Auswahl + Uhrzeit-Auswahl
+  (Keine, Heute, Morgen, 1 Woche, Nächsten Montag + 08:00, 12:00, 15:00, 18:00, 21:00)
+- **Benutzerdefiniert** öffnet jetzt direkt Datum+Zeit-Picker (mit Vorlage)
+- **Widget:** Lokalisierung via Android String-Resources (DE/EN)
+- **Widget:** Aktualisiert sich jetzt beim App-Start
+
 ## [0.2.3] - 2026-08-18
 
 ### Geändert
