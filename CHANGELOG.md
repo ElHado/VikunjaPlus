@@ -15,6 +15,11 @@ die Versionierung an [Semantic Versioning](https://semver.org/lang/de/).
 - **Widget:** Lokalisierung via Android String-Resources (DE/EN)
 - **Widget:** Aktualisiert sich jetzt beim App-Start
 
+### Behoben
+
+- **Kanban-Ansicht:** Neu erstellte Tasks erscheinen sofort im Bucket
+- **Kanban-Ansicht:** Erledigte Tasks verschwinden sofort aus dem Bucket
+
 ## [0.2.3] - 2026-08-18
 
 ### Geändert
