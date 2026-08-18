@@ -74,11 +74,11 @@ class AddTaskDialogState extends State<AddTaskDialog> {
   }
 
   Future<void> _openCustomPicker() async {
-    final now = DateTime.now();
+    final initial = dueDate ?? DateTime.now();
     var selectedDate = await showDialog<DateTime>(
       context: context,
       builder: (_) => DatePickerDialog(
-        initialDate: now,
+        initialDate: initial,
         firstDate: DateTime(1900),
         lastDate: DateTime(2100),
         initialCalendarMode: DatePickerMode.day,
@@ -90,7 +90,7 @@ class AddTaskDialogState extends State<AddTaskDialog> {
     var selectedTime = await showDialog<TimeOfDay>(
       context: context,
       builder: (_) => TimePickerDialog(
-        initialTime: TimeOfDay.fromDateTime(now),
+        initialTime: TimeOfDay.fromDateTime(initial),
       ),
     );
 
