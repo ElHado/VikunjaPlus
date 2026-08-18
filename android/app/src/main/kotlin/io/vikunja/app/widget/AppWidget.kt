@@ -143,7 +143,7 @@ class AppWidget : GlanceAppWidget() {
                     if (todayTasks.isNotEmpty()) {
                         item {
                             Text(
-                                "Today:",
+                                "Heute:",
                                 style = TextStyle(color = ColorProvider(Color.Black, Color.White))
                             )
                         }
@@ -154,7 +154,7 @@ class AppWidget : GlanceAppWidget() {
                     if (otherTasks.isNotEmpty()) {
                         item {
                             Text(
-                                "Overdue:",
+                                "Überfällig:",
                                 style = TextStyle(color = ColorProvider(Color.Black, Color.White))
                             )
                         }
@@ -175,7 +175,7 @@ class AppWidget : GlanceAppWidget() {
             contentAlignment = Alignment.Center,
         ) {
             TitleBar(
-                title = "Vikunja",
+                title = "Vikunja+",
                 startIcon = ImageProvider(R.drawable.vikunja_logo),
                 iconColor = null,
                 actions = {
@@ -187,7 +187,7 @@ class AppWidget : GlanceAppWidget() {
                             enabled = true,
                             onClick = actionRunCallback<InteractiveAction>(),
                             imageProvider = ImageProvider(R.drawable.add),
-                            contentDescription = "Add a Task",
+                            contentDescription = "Aufgabe hinzufügen",
                         )
                     }
                 },
@@ -252,7 +252,7 @@ class AppWidget : GlanceAppWidget() {
             contentAlignment = Alignment.Center,
         ) {
             Text(
-                text = "There are no tasks due today", style = TextStyle(
+                text = "Keine Aufgaben fällig", style = TextStyle(
                     fontSize = 16.sp, color = ColorProvider(
                         Color.Black, Color.White
                     )
