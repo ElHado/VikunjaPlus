@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer' as developer;
 
 import 'package:background_downloader/background_downloader.dart';
@@ -13,6 +14,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:vikunja_app/l10n/gen/app_localizations.dart';
+import 'package:vikunja_app/presentation/manager/widget_controller.dart';
 import 'package:vikunja_app/core/di/theme_provider.dart';
 import 'package:vikunja_app/core/di/locale_provider.dart';
 import 'package:vikunja_app/data/data_sources/settings_data_source.dart';
@@ -70,6 +72,9 @@ void main() async {
   } catch (e) {
     developer.log('Failed to initialise widget Callback');
   }
+
+  // Widget beim App-Start mit aktuellen Tasks füllen
+  unawaited(updateWidget());
 
   runApp(ProviderScope(child: VikunjaApp()));
 }
