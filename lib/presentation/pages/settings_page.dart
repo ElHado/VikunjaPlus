@@ -228,7 +228,6 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
                                   .bodySmall
                                   ?.color
                                   ?.withValues(alpha: 0.35),
-                              fontSize: 11,
                             ),
                           ),
                         );
@@ -255,7 +254,6 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: Theme.of(context).textTheme.bodySmall?.color
                               ?.withValues(alpha: 0.3),
-                          fontSize: 10,
                           decoration: TextDecoration.underline,
                         ),
                       ),
@@ -265,7 +263,6 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Theme.of(context).textTheme.bodySmall?.color
                             ?.withValues(alpha: 0.2),
-                        fontSize: 10,
                       ),
                     ),
                   ],
