@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:vikunja_app/core/di/locale_provider.dart';
 import 'package:vikunja_app/core/di/network_provider.dart';
 import 'package:vikunja_app/core/di/notification_provider.dart';
@@ -240,12 +241,23 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
                             ?.withValues(alpha: 0.5),
                       ),
                     ),
-                    Text(
-                      'Fork von go-vikunja/app v0.1.8',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).textTheme.bodySmall?.color
-                            ?.withValues(alpha: 0.3),
-                        fontSize: 10,
+                    GestureDetector(
+                      onTap: () async {
+                        final uri = Uri.parse(
+                          'https://github.com/go-vikunja/app',
+                        );
+                        if (await canLaunchUrl(uri)) {
+                          await launchUrl(uri);
+                        }
+                      },
+                      child: Text(
+                        'Fork von go-vikunja/app v0.1.8',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context).textTheme.bodySmall?.color
+                              ?.withValues(alpha: 0.3),
+                          fontSize: 10,
+                          decoration: TextDecoration.underline,
+                        ),
                       ),
                     ),
                   ],
