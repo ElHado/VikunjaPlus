@@ -260,6 +260,14 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
                         ),
                       ),
                     ),
+                    Text(
+                      'MIT License',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).textTheme.bodySmall?.color
+                            ?.withValues(alpha: 0.2),
+                        fontSize: 10,
+                      ),
+                    ),
                   ],
                 ),
                 ),
