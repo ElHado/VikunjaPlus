@@ -34,8 +34,11 @@ die Versionierung an [Semantic Versioning](https://semver.org/lang/de/).
 - **Aufgabensortierung:** Neue Option im Projekt-Bearbeiten-Dialog
   "Nach Fälligkeit sortieren" (umschaltbar).
 - **Android-Tooling:** Kotlin von 2.2.20 auf 2.3.20 aktualisiert.
+- **App-Name:** App heißt jetzt **Vikunja+** (Debug: *Vikunja+ (Dev)*).
 - **Einstellungen:** App-Version wird jetzt über dem Abmelden-Button
-  angezeigt.
+  angezeigt, inklusive Fork-Hinweis (go-vikunja/app v0.1.8).
+- **Aufgeräumt:** Nicht mehr verwendete Konstanten entfernt (`repo`,
+  `vStandardVerticalPadding`)
 
 ## [0.2.1] - 2026-08-16
 

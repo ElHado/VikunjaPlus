@@ -205,13 +205,25 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 8),
                 child: Center(
-                  child: Text(
-                    'v$appVersion',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).textTheme.bodySmall?.color
-                          ?.withValues(alpha: 0.5),
+                  child: Column(
+                  children: [
+                    Text(
+                      'v$appVersion',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).textTheme.bodySmall?.color
+                            ?.withValues(alpha: 0.5),
+                      ),
                     ),
-                  ),
+                    Text(
+                      'Fork von go-vikunja/app v0.1.8',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).textTheme.bodySmall?.color
+                            ?.withValues(alpha: 0.3),
+                        fontSize: 10,
+                      ),
+                    ),
+                  ],
+                ),
                 ),
               ),
               TextButton(
