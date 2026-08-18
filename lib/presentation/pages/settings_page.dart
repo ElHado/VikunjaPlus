@@ -218,7 +218,7 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
                         return Padding(
                           padding: EdgeInsets.only(bottom: 2),
                           child: Text(
-                            serverUrl,
+                            'Server: $serverUrl',
                             style: Theme.of(context)
                                 .textTheme
                                 .bodySmall
@@ -254,7 +254,6 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: Theme.of(context).textTheme.bodySmall?.color
                               ?.withValues(alpha: 0.3),
-                          decoration: TextDecoration.underline,
                         ),
                       ),
                     ),
