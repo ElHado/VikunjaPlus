@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_today">Heute:</string>
+    <string name="widget_overdue">Überfällig:</string>
+    <string name="widget_empty">Keine Aufgaben fällig</string>
+    <string name="widget_add_task">Aufgabe hinzufügen</string>
+</resources>

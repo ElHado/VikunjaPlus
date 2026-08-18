@@ -129,9 +129,9 @@ class AppWidget : GlanceAppWidget() {
         Column(
             modifier = GlanceModifier.fillMaxHeight(), verticalAlignment = Alignment.Top
         ) {
-            WidgetTitleBar()
+            WidgetTitleBar(context)
             if (todayTasks.isEmpty() and otherTasks.isEmpty()) {
-                EmptyView()
+                EmptyView(context)
             } else {
                 LazyColumn(
                     modifier = GlanceModifier.background(
@@ -143,7 +143,7 @@ class AppWidget : GlanceAppWidget() {
                     if (todayTasks.isNotEmpty()) {
                         item {
                             Text(
-                                "Heute:",
+                                context.getString(R.string.widget_today),
                                 style = TextStyle(color = ColorProvider(Color.Black, Color.White))
                             )
                         }
@@ -154,7 +154,7 @@ class AppWidget : GlanceAppWidget() {
                     if (otherTasks.isNotEmpty()) {
                         item {
                             Text(
-                                "Überfällig:",
+                                context.getString(R.string.widget_overdue),
                                 style = TextStyle(color = ColorProvider(Color.Black, Color.White))
                             )
                         }
@@ -168,7 +168,7 @@ class AppWidget : GlanceAppWidget() {
     }
 
     @Composable
-    private fun WidgetTitleBar() {
+    private fun WidgetTitleBar(context: Context) {
         Box(
             modifier = GlanceModifier
                 .background(ColorProvider(Color(0xFF126cfd), Color(0xFF013992))),
@@ -187,7 +187,7 @@ class AppWidget : GlanceAppWidget() {
                             enabled = true,
                             onClick = actionRunCallback<InteractiveAction>(),
                             imageProvider = ImageProvider(R.drawable.add),
-                            contentDescription = "Aufgabe hinzufügen",
+                            contentDescription = context.getString(R.string.widget_add_task),
                         )
                     }
                 },
@@ -245,14 +245,14 @@ class AppWidget : GlanceAppWidget() {
     }
 
     @Composable
-    private fun EmptyView() {
+    private fun EmptyView(context: Context) {
         Box(
             modifier = GlanceModifier.fillMaxSize()
                 .background(ColorProvider(Color.White, Color(0xFF1f2937))),
             contentAlignment = Alignment.Center,
         ) {
             Text(
-                text = "Keine Aufgaben fällig", style = TextStyle(
+                text = context.getString(R.string.widget_empty), style = TextStyle(
                     fontSize = 16.sp, color = ColorProvider(
                         Color.Black, Color.White
                     )
