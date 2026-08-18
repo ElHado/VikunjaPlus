@@ -244,8 +244,36 @@ class ProjectController extends _$ProjectController with PaginationMixin<Task> {
       var value = state.value;
       if (value != null) {
         var tasks = value.tasks;
-        tasks.add(response.toSuccess().body);
-        state = AsyncData(value.copyWith(tasks: tasks));
+        final savedTask = response.toSuccess().body;
+        tasks.add(savedTask);
+
+        // Auch zum Kanban-Bucket hinzufügen, falls in Kanban-Ansicht
+        if (value.buckets.isNotEmpty) {
+          var buckets = value.buckets;
+          var bucketIndex = buckets.indexWhere(
+            (b) => b.id == savedTask.bucketId,
+          );
+          if (bucketIndex >= 0) {
+            if (savedTask.bucketId == buckets[bucketIndex].id) {
+              buckets[bucketIndex].tasks.add(savedTask);
+            }
+          } else {
+            // Fallback: zum Default-Bucket hinzufügen
+            var defaultBucket = buckets.firstWhereOrNull(
+              (b) =>
+                  b.id ==
+                  project.views[value.viewIndex].defaultBucketId,
+            );
+            if (defaultBucket != null) {
+              defaultBucket.tasks.add(savedTask);
+            } else if (buckets.isNotEmpty) {
+              buckets.first.tasks.add(savedTask);
+            }
+          }
+          state = AsyncData(value.copyWith(tasks: tasks, buckets: buckets));
+        } else {
+          state = AsyncData(value.copyWith(tasks: tasks));
+        }
 
         return true;
       }
@@ -492,7 +520,17 @@ class ProjectController extends _$ProjectController with PaginationMixin<Task> {
       if (value != null) {
         var tasks = value.tasks;
         tasks.removeWhere((element) => element.id == task.id);
-        state = AsyncData(value.copyWith(tasks: tasks));
+
+        // Auch aus Kanban-Bucket entfernen
+        if (value.buckets.isNotEmpty) {
+          var buckets = value.buckets;
+          for (var bucket in buckets) {
+            bucket.tasks.removeWhere((t) => t.id == task.id);
+          }
+          state = AsyncData(value.copyWith(tasks: tasks, buckets: buckets));
+        } else {
+          state = AsyncData(value.copyWith(tasks: tasks));
+        }
 
         return true;
       }
