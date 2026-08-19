@@ -14,7 +14,6 @@ dependencies:
 
   background_downloader: ^9.2.3
   collection: ^1.18.0
-  cronet_http: ^1.2.0
   cupertino_http: ^2.0.2
   datetime_picker_formfield_new: ^2.1.0
   dynamic_color: ^1.7.0

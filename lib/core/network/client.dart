@@ -3,7 +3,6 @@ import 'dart:core';
 import 'dart:developer' as developer;
 import 'dart:io';
 
-import 'package:cronet_http/cronet_http.dart' as cronet_http;
 import 'package:cupertino_http/cupertino_http.dart' as cupertino_http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
@@ -54,11 +53,7 @@ class Client {
   http.Client createClient() {
     try {
       if (Platform.isAndroid) {
-        final engine = cronet_http.CronetEngine.build(
-          cacheMode: cronet_http.CacheMode.memory,
-          cacheMaxSize: 1000000,
-        );
-        return cronet_http.CronetClient.fromCronetEngine(engine);
+        return io_client.IOClient();
       } else if (Platform.isIOS || Platform.isMacOS) {
         final config =
             cupertino_http
