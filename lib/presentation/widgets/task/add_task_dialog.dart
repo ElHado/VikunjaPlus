@@ -31,6 +31,7 @@ class AddTaskDialogState extends State<AddTaskDialog> {
   }
 
   void _onDaySelected(NewTaskDue day, DateTime now) {
+    FocusScope.of(context).unfocus();
     if (day == NewTaskDue.none || day == NewTaskDue.custom) {
       setState(() {
         newTaskDue = day;
@@ -53,6 +54,7 @@ class AddTaskDialogState extends State<AddTaskDialog> {
   }
 
   void _onTimeSelected(int hour) {
+    FocusScope.of(context).unfocus();
     if (dueDate == null) return;
     setState(() {
       _selectedHour = hour;
