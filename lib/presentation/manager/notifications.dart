@@ -318,7 +318,8 @@ class NotificationHandler {
             platformChannelSpecificsReminders,
           );
         }
-        if (task.hasDueDate) {
+        // Nur Due-Notification schedulen, wenn keine Erinnerungen gesetzt sind
+        if (task.hasDueDate && task.reminderDates.isEmpty) {
           // Title = Task-Name, Body = Beschreibung (oder Fallback)
           final dueBody = (task.description.isNotEmpty)
               ? stripHtml(task.description)
