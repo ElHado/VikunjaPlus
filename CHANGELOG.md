@@ -5,6 +5,22 @@ Alle nennenswerten Änderungen an diesem Fork werden hier dokumentiert.
 Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung an [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.3.0] - 2026-08-18
+
+### Geändert
+
+- **Major Build-Upgrade:** Gradle 9.5.0 + AGP 9.3.1 + Kotlin 2.3.20
+- **compileSdk:** Auf 36 aktualisiert
+- **HTML-Editor entfernt:** Plain-Text mit HTML-Stripping + Warnhinweis
+- **Abhängigkeiten bereinigt:** `html_editor_enhanced`, `flutter_inappwebview`,
+  `cronet_http` entfernt
+
+### Behoben
+
+- **Doppelte Notifications:** Nur noch eine pro Task (Erinnerung statt Fällig)
+- **Kanban:** Tasks erscheinen sofort nach Hinzufügen/Erledigen
+- **Tastatur:** Wird bei Tag/Uhrzeit-Auswahl automatisch ausgeblendet
+
 ## [0.2.4] - 2026-08-18
 
 ### Geändert
