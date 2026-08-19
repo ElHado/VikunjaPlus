@@ -1,9 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:vikunja_app/domain/entities/task_comment.dart';
 import 'package:vikunja_app/l10n/gen/app_localizations.dart';
 import 'package:vikunja_app/presentation/manager/task_comments_controller.dart';
+
+String stripHtml(String html) {
+  if (html.isEmpty) return html;
+  var text = html;
+  text = text.replaceAll(RegExp(r'<[^>]*>'), '');
+  text = text.replaceAll(RegExp(r'&nbsp;'), ' ');
+  text = text.replaceAll(RegExp(r'&amp;'), '&');
+  text = text.replaceAll(RegExp(r'&lt;'), '<');
+  text = text.replaceAll(RegExp(r'&gt;'), '>');
+  text = text.replaceAll(RegExp(r'&quot;'), '"');
+  text = text.replaceAll(RegExp(r'&#39;'), "'");
+  text = text.replaceAll(RegExp(r'\s+'), ' ').trim();
+  return text;
+}
 
 class CommentEditPage extends ConsumerStatefulWidget {
   final int taskId;
@@ -16,19 +29,35 @@ class CommentEditPage extends ConsumerStatefulWidget {
 }
 
 class _CommentEditPageState extends ConsumerState<CommentEditPage> {
-  final HtmlEditorController _controller = HtmlEditorController();
+  late TextEditingController _controller;
   bool _isSaving = false;
+  bool _hasHtml = false;
 
   bool get _isEditMode => widget.comment != null;
+
+  @override
+  void initState() {
+    super.initState();
+    final text = widget.comment?.comment ?? '';
+    _hasHtml = text.contains('<');
+    _controller = TextEditingController(
+      text: _hasHtml ? stripHtml(text) : text,
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   Future<void> _save() async {
     if (_isSaving) return;
 
     setState(() => _isSaving = true);
 
-    final text = await _controller.getText();
+    final text = _controller.text;
 
-    // Check if text is empty after getting it
     if (text.trim().isEmpty) {
       setState(() => _isSaving = false);
       var buildContext = context;
@@ -91,12 +120,46 @@ class _CommentEditPageState extends ConsumerState<CommentEditPage> {
           ),
         ],
       ),
-      body: HtmlEditor(
-        controller: _controller,
-        htmlEditorOptions: HtmlEditorOptions(
-          hint: l10n.commentInputHint,
-          initialText: widget.comment?.comment,
-        ),
+      body: Column(
+        children: [
+          if (_hasHtml)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              color: Colors.orange.shade100,
+              child: Row(
+                children: [
+                  Icon(Icons.warning_amber, size: 20, color: Colors.orange.shade800),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      l10n.editDescriptionWarning,
+                      style: TextStyle(
+                        color: Colors.orange.shade900,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: TextField(
+                controller: _controller,
+                keyboardType: TextInputType.multiline,
+                maxLines: null,
+                expands: true,
+                textAlignVertical: TextAlignVertical.top,
+                decoration: InputDecoration(
+                  hintText: l10n.commentInputHint,
+                  border: InputBorder.none,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

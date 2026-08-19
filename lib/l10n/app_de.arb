@@ -108,6 +108,7 @@
   "taskSaveError": "Fehler beim Speichern der Aufgabe!",
   "taskUpdatedSuccess": "Die Aufgabe wurde erfolgreich aktualisiert!",
   "editDescriptionTitle": "Beschreibung bearbeiten",
+  "editDescriptionWarning": "Achtung: HTML-Formatierungen gehen beim Speichern verloren",
   "editCommentTitle": "Kommentar bearbeiten",
   "addCommentTitle": "Kommentar hinzufügen",
   "comments": "Kommentare",

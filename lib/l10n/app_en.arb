@@ -108,6 +108,7 @@
   "taskSaveError": "Error saving the task!",
   "taskUpdatedSuccess": "The task was updated successfully!",
   "editDescriptionTitle": "Edit Description",
+  "editDescriptionWarning": "Warning: HTML formatting will be lost when saving",
   "editCommentTitle": "Edit Comment",
   "addCommentTitle": "Add Comment",
   "comments": "Comments",
