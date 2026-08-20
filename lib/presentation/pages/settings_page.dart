@@ -262,8 +262,8 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
                 icon: Icon(Icons.battery_alert, size: 18),
                 label: Text(l10n.batteryOptimization),
                 onPressed: () async {
-                  final uri = Uri.parse('package:vikunjaplus.app');
-                  await launchUrl(uri, mode: LaunchMode.externalApplication);
+                  // Öffnet Android App-Infoseite für Batterieoptimierung
+                  await openAppSettings();
                 },
               ),
               Padding(
