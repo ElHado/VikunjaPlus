@@ -134,13 +134,16 @@ class ProjectTaskList extends ConsumerWidget {
         return ReorderableDelayedDragStartListener(
           key: Key('task_${task.id}'),
           index: index,
-          child: Material(
-            color: Colors.transparent,
-            child: Column(
-              children: [
-                _buildTile(ref, task),
-                if (index < tasks.length - 1) Divider(height: 1),
-              ],
+          child: RepaintBoundary(
+            child: Material(
+              color: Colors.transparent,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildTile(ref, task),
+                  if (index < tasks.length - 1) const Divider(height: 1),
+                ],
+              ),
             ),
           ),
         );
