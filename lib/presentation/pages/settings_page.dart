@@ -263,9 +263,7 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
                 label: Text(l10n.batteryOptimization),
                 onPressed: () async {
                   final uri = Uri.parse('package:vikunjaplus.app');
-                  if (await canLaunchUrl(uri)) {
-                    await launchUrl(uri);
-                  }
+                  await launchUrl(uri, mode: LaunchMode.externalApplication);
                 },
               ),
               Padding(

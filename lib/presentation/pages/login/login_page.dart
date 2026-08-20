@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:vikunja_app/core/di/network_provider.dart';
@@ -302,6 +303,12 @@ class LoginPageState extends ConsumerState<LoginPage> {
       controller: textEditingController,
       focusNode: focusNode,
       enabled: !_loading,
+      keyboardType: TextInputType.url,
+      autocorrect: false,
+      textInputAction: TextInputAction.next,
+      inputFormatters: [
+        FilteringTextInputFormatter.deny(RegExp(r'\s')),
+      ],
       onChanged: (_) {
         if (_serverError != null) {
           setState(() => _serverError = null);
