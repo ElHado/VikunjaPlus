@@ -70,7 +70,9 @@ class ProjectTaskList extends ConsumerWidget {
         }
 
         if (children.isNotEmpty) {
-          return CustomScrollView(slivers: children);
+          return CustomScrollView(
+            slivers: children,
+          );
         } else {
           return EmptyView(
             Icons.list,
@@ -120,17 +122,22 @@ class ProjectTaskList extends ConsumerWidget {
         projectController.valueOrNull?.chronologicalSort ?? false;
 
     if (chronologicalSort) {
-      tasks.sort((a, b) {
-        if (!a.hasDueDate && !b.hasDueDate) return 0;
-        if (!a.hasDueDate) return 1;
-        if (!b.hasDueDate) return -1;
-        return a.dueDate!.compareTo(b.dueDate!);
-      });
+      final sorted = List<Task>.from(tasks)
+        ..sort((a, b) {
+          if (!a.hasDueDate && !b.hasDueDate) return 0;
+          if (!a.hasDueDate) return 1;
+          if (!b.hasDueDate) return -1;
+          return a.dueDate!.compareTo(b.dueDate!);
+        });
+      return _buildReorderableList(ref, sorted);
     }
+    return _buildReorderableList(ref, tasks);
+  }
 
+  Widget _buildReorderableList(WidgetRef ref, List<Task> taskList) {
     return SliverReorderableList(
       itemBuilder: (context, index) {
-        final task = tasks[index];
+        final task = taskList[index];
         return ReorderableDelayedDragStartListener(
           key: Key('task_${task.id}'),
           index: index,
@@ -141,30 +148,30 @@ class ProjectTaskList extends ConsumerWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   _buildTile(ref, task),
-                  if (index < tasks.length - 1) const Divider(height: 1),
+                  if (index < taskList.length - 1) const Divider(height: 1),
                 ],
               ),
             ),
           ),
         );
       },
-      itemCount: tasks.length,
+      itemCount: taskList.length,
       onReorderItem: (oldIndex, newIndex) {
         if (newIndex < -1) newIndex = -1;
 
-        final taskList = List<Task>.from(tasks);
-        final moved = taskList.removeAt(oldIndex);
+        final reorderList = List<Task>.from(taskList);
+        final moved = reorderList.removeAt(oldIndex);
         final insertIndex = newIndex == -1
             ? 0
-            : newIndex.clamp(0, taskList.length);
-        taskList.insert(insertIndex, moved);
+            : newIndex.clamp(0, reorderList.length);
+        reorderList.insert(insertIndex, moved);
 
         final before = insertIndex == 0
             ? null
-            : taskList[insertIndex - 1].position;
-        final after = insertIndex == taskList.length - 1
+            : reorderList[insertIndex - 1].position;
+        final after = insertIndex == reorderList.length - 1
             ? null
-            : taskList[insertIndex + 1].position;
+            : reorderList[insertIndex + 1].position;
         final newPos = calculateItemPosition(
           positionBefore: before,
           positionAfter: after,
@@ -174,7 +181,7 @@ class ProjectTaskList extends ConsumerWidget {
             .read(projectControllerProvider(project).notifier)
             .reorderTasks(
               project: project,
-              newOrderedTasks: taskList,
+              newOrderedTasks: reorderList,
               movedTaskId: moved.id,
               newPosition: newPos,
             )
