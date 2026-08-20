@@ -155,7 +155,7 @@ class SettingsDatasource {
   Future<int> getSnoozeDuration() {
     return _storage
         .read(key: "snooze_duration")
-        .then((value) => int.tryParse(value ?? "15") ?? 15);
+        .then((value) => int.tryParse(value ?? "30") ?? 30);
   }
 
   Future<void> setSnoozeDuration(int minutes) {
