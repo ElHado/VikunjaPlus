@@ -112,6 +112,7 @@
   "snoozeDuration": "Erinnerung verschieben",
   "snoozeDurationHelper": "Verzögerung bis zur nächsten Erinnerung",
   "batteryOptimization": "Energieeinstellungen & Hintergrund",
+  "batteryOptimizationHelper": "Batterieoptimierung deaktivieren und 'App pausieren' ausschalten, damit Benachrichtigungen zuverlässig ankommen",
   "editCommentTitle": "Kommentar bearbeiten",
   "addCommentTitle": "Kommentar hinzufügen",
   "comments": "Kommentare",

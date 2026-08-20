@@ -278,6 +278,16 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
                   }
                 },
               ),
+              Padding(
+                padding: EdgeInsets.only(left: 16, right: 16, bottom: 4),
+                child: Text(
+                  l10n.batteryOptimizationHelper,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).textTheme.bodySmall?.color
+                        ?.withValues(alpha: 0.5),
+                  ),
+                ),
+              ),
               Divider(),
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 8),

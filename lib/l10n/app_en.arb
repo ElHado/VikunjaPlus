@@ -112,6 +112,7 @@
   "snoozeDuration": "Snooze duration",
   "snoozeDurationHelper": "Delay before the next reminder",
   "batteryOptimization": "Battery optimization & background settings",
+  "batteryOptimizationHelper": "Deactivate battery optimization & disable 'Pause app activity' to ensure notifications arrive reliably",
   "editCommentTitle": "Edit Comment",
   "addCommentTitle": "Add Comment",
   "comments": "Comments",
