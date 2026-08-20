@@ -17,7 +17,7 @@ class AddTaskDialogState extends State<AddTaskDialog> {
   DateTime? dueDate;
   var textController = TextEditingController();
 
-  static const _timePresets = [8, 12, 15, 18, 21];
+  static const _timePresets = [8, 10, 12, 15, 18, 21];
   int? _selectedHour;
 
   @override
@@ -67,12 +67,13 @@ class AddTaskDialogState extends State<AddTaskDialog> {
   }
 
   int _calculateNearestHour(DateTime now) {
-    if (now.hour <= 9) return 9;
+    if (now.hour <= 8) return 8;
+    if (now.hour < 10) return 10;
     if (now.hour < 12) return 12;
     if (now.hour < 15) return 15;
     if (now.hour < 18) return 18;
     if (now.hour < 21) return 21;
-    return 9;
+    return 8;
   }
 
   Future<void> _openCustomPicker() async {
