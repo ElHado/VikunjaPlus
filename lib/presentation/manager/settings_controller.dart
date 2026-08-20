@@ -34,6 +34,10 @@ class SettingsController extends _$SettingsController {
         .read(settingsRepositoryProvider)
         .getDynamicColors();
 
+    var snoozeDuration = await ref
+        .read(settingsRepositoryProvider)
+        .getSnoozeDuration();
+
     final user = ref.read(currentUserProvider)!;
     final projectsResponse = await ref.read(projectRepositoryProvider).getAll();
 
@@ -46,6 +50,7 @@ class SettingsController extends _$SettingsController {
       projects,
       ignoreCertificates,
       refreshInterval,
+      snoozeDuration,
       themeMode,
       dynamicColor,
     );
@@ -85,6 +90,11 @@ class SettingsController extends _$SettingsController {
     state = AsyncData(await getAll());
 
     updateWorkManagerDuration();
+  }
+
+  Future<void> setSnoozeDuration(int minutes) async {
+    ref.read(settingsRepositoryProvider).setSnoozeDuration(minutes);
+    state = AsyncData(await getAll());
   }
 
   void updateWorkManagerDuration() async {

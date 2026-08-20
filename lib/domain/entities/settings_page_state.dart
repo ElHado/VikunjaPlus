@@ -9,6 +9,7 @@ class SettingsPageState {
   bool ignoreCertificates;
 
   int refreshInterval;
+  int snoozeDuration;
 
   FlutterThemeMode themeMode;
   bool dynamicColors;
@@ -18,6 +19,7 @@ class SettingsPageState {
     this.projects,
     this.ignoreCertificates,
     this.refreshInterval,
+    this.snoozeDuration,
     this.themeMode,
     this.dynamicColors,
   );

@@ -30,12 +30,21 @@ class SettingsPage extends ConsumerStatefulWidget {
 
 class SettingsPageState extends ConsumerState<SettingsPage> {
   static const _intervalMinutes = [0, 15, 30, 45, 60, 90, 120, 180, 240, 300, 360];
+  static const _snoozeMinutes = [15, 30, 45, 60, 90, 120, 180, 240, 300, 360, 1440];
   bool _isDragging = false;
   double _dragValue = 0;
+  bool _isSnoozeDragging = false;
+  double _snoozeDragValue = 0;
 
   String _formatInterval(int minutes, AppLocalizations l10n) {
     if (minutes == 0) return '0 — ${l10n.none}';
     if (minutes < 60) return '$minutes min';
+    return '${minutes ~/ 60} h';
+  }
+
+  String _formatSnooze(int minutes, AppLocalizations l10n) {
+    if (minutes < 60) return '$minutes min';
+    if (minutes == 1440) return '24 h (${l10n.dueOptionTomorrow})';
     return '${minutes ~/ 60} h';
   }
 
@@ -61,6 +70,12 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
               : (_intervalMinutes.indexOf(settings.refreshInterval).clamp(
                   0,
                   _intervalMinutes.length - 1,
+                ));
+          final snoozeIndex = _isSnoozeDragging
+              ? _snoozeDragValue.round()
+              : (_snoozeMinutes.indexOf(settings.snoozeDuration).clamp(
+                  0,
+                  _snoozeMinutes.length - 1,
                 ));
 
           return ListView(
@@ -178,6 +193,47 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
                     ),
                     Text(
                       l10n.noLimitHelper,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ],
+                ),
+              ),
+              Divider(),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '${l10n.snoozeDuration} ${_formatSnooze(_snoozeMinutes[snoozeIndex], l10n)}',
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                    Slider(
+                      value: snoozeIndex.toDouble(),
+                      min: 0,
+                      max: (_snoozeMinutes.length - 1).toDouble(),
+                      divisions: _snoozeMinutes.length - 1,
+                      label: _formatSnooze(
+                        _snoozeMinutes[snoozeIndex],
+                        l10n,
+                      ),
+                      onChanged: (v) => setState(() {
+                        _isSnoozeDragging = true;
+                        _snoozeDragValue = v;
+                      }),
+                      onChangeEnd: (v) {
+                        final idx = v.round();
+                        setState(() {
+                          _isSnoozeDragging = false;
+                          _snoozeDragValue = idx.toDouble();
+                        });
+                        ref
+                            .read(settingsControllerProvider.notifier)
+                            .setSnoozeDuration(_snoozeMinutes[idx]);
+                      },
+                    ),
+                    Text(
+                      l10n.snoozeDurationHelper,
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ],

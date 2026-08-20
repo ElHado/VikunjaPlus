@@ -151,4 +151,17 @@ class SettingsDatasource {
   Future<void> setLocaleOverride(String? localeCode) async {
     await _storage.write(key: "locale_override", value: localeCode);
   }
+
+  Future<int> getSnoozeDuration() {
+    return _storage
+        .read(key: "snooze_duration")
+        .then((value) => int.tryParse(value ?? "15") ?? 15);
+  }
+
+  Future<void> setSnoozeDuration(int minutes) {
+    return _storage.write(
+      key: "snooze_duration",
+      value: minutes.toString(),
+    );
+  }
 }

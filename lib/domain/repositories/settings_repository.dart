@@ -47,4 +47,7 @@ abstract class SettingsRepository {
   // Locale override (null -> system default)
   Future<String?> getLocaleOverride();
   Future<void> setLocaleOverride(String? localeCode);
+
+  Future<int> getSnoozeDuration();
+  Future<void> setSnoozeDuration(int minutes);
 }

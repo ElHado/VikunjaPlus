@@ -7,6 +7,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest_all.dart' as tz_data;
 import 'package:vikunja_app/core/network/client.dart';
 import 'package:vikunja_app/data/data_sources/settings_data_source.dart';
 import 'package:vikunja_app/data/data_sources/task_data_source.dart';
@@ -45,6 +46,7 @@ String stripHtml(String html) {
 
 const _actionDonePortName = 'action_done_port_name';
 const _notificationActionDone = 'action_done';
+const _notificationActionSnooze = 'action_snooze';
 
 @pragma('vm:entry-point')
 Future<void> notificationTapBackground(
@@ -55,6 +57,11 @@ Future<void> notificationTapBackground(
 
     if (id != null) {
       await markAsDone(id);
+    }
+  } else if (notificationResponse.actionId == _notificationActionSnooze) {
+    var id = notificationResponse.id;
+    if (id != null) {
+      await snoozeTask(id);
     }
   }
 }
@@ -94,6 +101,52 @@ Future<void> markAsDone(int id) async {
   }
 }
 
+Future<void> snoozeTask(int id) async {
+  var datasource = SettingsDatasource(FlutterSecureStorage());
+  var snoozeMinutes = await datasource.getSnoozeDuration();
+  var localTimezone = await FlutterTimezone.getLocalTimezone();
+
+  tz_data.initializeTimeZones();
+  var snoozeTime = tz.TZDateTime.now(tz.getLocation(localTimezone))
+      .add(Duration(minutes: snoozeMinutes));
+
+  FlutterLocalNotificationsPlugin notificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+
+  var channel = AndroidNotificationDetails(
+    "Vikunja1",
+    "Fälligkeits-Benachrichtigungen",
+    channelDescription: 'Benachrichtigungen für fällige Aufgaben und Erinnerungen',
+    icon: 'vikunja_notification_logo',
+    importance: Importance.high,
+    actions: <AndroidNotificationAction>[
+      AndroidNotificationAction(_notificationActionDone, 'Erledigt'),
+      AndroidNotificationAction(_notificationActionSnooze, 'Erinnern'),
+    ],
+  );
+  var platformDetails = NotificationDetails(android: channel);
+
+  String label;
+  if (snoozeMinutes < 60) {
+    label = '$snoozeMinutes min';
+  } else if (snoozeMinutes == 1440) {
+    label = '24 h';
+  } else {
+    label = '${snoozeMinutes ~/ 60} h';
+  }
+
+  await notificationsPlugin.cancel(id: id);
+  await notificationsPlugin.zonedSchedule(
+    id: id,
+    title: 'Erinnerung',
+    body: 'Verschoben um $label',
+    scheduledDate: snoozeTime,
+    notificationDetails: platformDetails,
+    androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+    payload: id.toString(),
+  );
+}
+
 class NotificationHandler {
   final ReceivePort _receivePort = ReceivePort();
   final List<Function()> _taskChangedListener = List.empty(growable: true);
@@ -102,6 +155,7 @@ class NotificationHandler {
       FlutterLocalNotificationsPlugin();
 
   final String _doneActionLabel;
+  final String _snoozeActionLabel;
   final String _channelDueName;
   final String _channelReminderName;
   final String _channelDescription;
@@ -118,6 +172,7 @@ class NotificationHandler {
 
   NotificationHandler({
     String doneActionLabel = 'Erledigt',
+    String snoozeActionLabel = 'Erinnern',
     String channelDueName = 'Fälligkeits-Benachrichtigungen',
     String channelReminderName = 'Erinnerungs-Benachrichtigungen',
     String channelDescription =
@@ -127,6 +182,7 @@ class NotificationHandler {
     String testNotificationTitle = 'Test-Benachrichtigung',
     String testNotificationBody = 'Dies ist eine Test-Benachrichtigung',
   })  : _doneActionLabel = doneActionLabel,
+        _snoozeActionLabel = snoozeActionLabel,
         _channelDueName = channelDueName,
         _channelReminderName = channelReminderName,
         _channelDescription = channelDescription,
@@ -142,6 +198,7 @@ class NotificationHandler {
       importance: Importance.high,
       actions: <AndroidNotificationAction>[
         AndroidNotificationAction(_notificationActionDone, _doneActionLabel),
+        AndroidNotificationAction(_notificationActionSnooze, _snoozeActionLabel),
       ],
     );
     androidSpecificsReminders = AndroidNotificationDetails(
@@ -152,6 +209,7 @@ class NotificationHandler {
       importance: Importance.high,
       actions: <AndroidNotificationAction>[
         AndroidNotificationAction(_notificationActionDone, _doneActionLabel),
+        AndroidNotificationAction(_notificationActionSnooze, _snoozeActionLabel),
       ],
     );
     iOSSpecifics = DarwinNotificationDetails(

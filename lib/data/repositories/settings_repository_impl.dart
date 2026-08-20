@@ -126,4 +126,14 @@ class SettingsRepositoryImpl implements SettingsRepository {
   Future<void> setLocaleOverride(String? localeCode) {
     return _datasource.setLocaleOverride(localeCode);
   }
+
+  @override
+  Future<int> getSnoozeDuration() {
+    return _datasource.getSnoozeDuration();
+  }
+
+  @override
+  Future<void> setSnoozeDuration(int minutes) {
+    return _datasource.setSnoozeDuration(minutes);
+  }
 }

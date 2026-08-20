@@ -109,6 +109,8 @@
   "taskUpdatedSuccess": "Die Aufgabe wurde erfolgreich aktualisiert!",
   "editDescriptionTitle": "Beschreibung bearbeiten",
   "editDescriptionWarning": "Achtung: HTML-Formatierungen gehen beim Speichern verloren",
+  "snoozeDuration": "Erinnerung verschieben",
+  "snoozeDurationHelper": "Verzögerung bis zur nächsten Erinnerung",
   "editCommentTitle": "Kommentar bearbeiten",
   "addCommentTitle": "Kommentar hinzufügen",
   "comments": "Kommentare",
