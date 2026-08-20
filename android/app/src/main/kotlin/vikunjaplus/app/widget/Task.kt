@@ -1,4 +1,4 @@
-package io.vikunja.app.widget
+package vikunjaplus.app.widget
 
 import androidx.annotation.Keep
 import java.util.Date

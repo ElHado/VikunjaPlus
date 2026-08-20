@@ -1,4 +1,4 @@
-package io.vikunja.app
+package vikunjaplus.app
 
 import android.content.Intent
 import androidx.annotation.NonNull

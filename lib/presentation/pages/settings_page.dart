@@ -262,7 +262,7 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
                 icon: Icon(Icons.battery_alert, size: 18),
                 label: Text(l10n.batteryOptimization),
                 onPressed: () async {
-                  final uri = Uri.parse('package:io.vikunja.app');
+                  final uri = Uri.parse('package:vikunjaplus.app');
                   if (await canLaunchUrl(uri)) {
                     await launchUrl(uri);
                   }
