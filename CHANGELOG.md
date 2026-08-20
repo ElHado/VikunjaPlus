@@ -5,6 +5,18 @@ Alle nennenswerten Änderungen an diesem Fork werden hier dokumentiert.
 Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung an [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.3.1] - 2026-08-18
+
+### Hinzugefügt
+
+- **Snooze-Button in Benachrichtigungen:** Task per "Erinnern" um konfigurierbare Zeit verschieben (ändert dueDate auf dem Server)
+- **Einstellungen:** Snooze-Dauer einstellbar (15 Min – 6 Std. + 24h/Auf morgen)
+
+### Geändert
+
+- **6. Uhrzeit-Vorgabe 10:00** hinzugefügt (08, 10, 12, 15, 18, 21)
+- **Snooze-Standard** auf 30 Minuten geändert
+
 ## [0.3.0] - 2026-08-18
 
 ### Geändert
