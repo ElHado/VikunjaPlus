@@ -156,7 +156,7 @@ class NotificationHandler {
 
   NotificationHandler({
     String doneActionLabel = 'Erledigt',
-    String snoozeActionLabel = 'Erinnern',
+    String snoozeActionLabel = 'Aufgabe schieben',
     String channelDueName = 'Fälligkeits-Benachrichtigungen',
     String channelReminderName = 'Erinnerungs-Benachrichtigungen',
     String channelDescription =

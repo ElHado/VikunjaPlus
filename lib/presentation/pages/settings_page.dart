@@ -258,6 +258,26 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
                 },
                 child: Text(l10n.sendTestNotification),
               ),
+              TextButton.icon(
+                icon: Icon(Icons.battery_alert, size: 18),
+                label: Text(l10n.batteryOptimization),
+                onPressed: () async {
+                  final uri = Uri.parse(
+                    'android.settings.APPLICATION_DETAILS_SETTINGS',
+                  );
+                  if (await canLaunchUrl(uri)) {
+                    await launchUrl(uri);
+                  } else {
+                    // Fallback: Package-spezifische Einstellungen
+                    final fallback = Uri.parse(
+                      'package:io.vikunja.app',
+                    );
+                    if (await canLaunchUrl(fallback)) {
+                      await launchUrl(fallback);
+                    }
+                  }
+                },
+              ),
               Divider(),
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 8),

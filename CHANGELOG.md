@@ -5,6 +5,14 @@ Alle nennenswerten Änderungen an diesem Fork werden hier dokumentiert.
 Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung an [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.3.2] - 2026-08-18
+
+### Geändert
+
+- **Snooze-Button** umbenannt: "Erinnern" → "Aufgabe schieben"
+- **Neuer Einstellungsbutton:** "Energieeinstellungen & Hintergrund" öffnet App-Infoseite (Batterieoptimierung, Akku-Einstellungen, "Nicht pausieren")
+- **Version 0.3.2**
+
 ## [0.3.1] - 2026-08-18
 
 ### Hinzugefügt
