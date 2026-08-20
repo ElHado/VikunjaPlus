@@ -262,19 +262,9 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
                 icon: Icon(Icons.battery_alert, size: 18),
                 label: Text(l10n.batteryOptimization),
                 onPressed: () async {
-                  final uri = Uri.parse(
-                    'android.settings.APPLICATION_DETAILS_SETTINGS',
-                  );
+                  final uri = Uri.parse('package:io.vikunja.app');
                   if (await canLaunchUrl(uri)) {
                     await launchUrl(uri);
-                  } else {
-                    // Fallback: Package-spezifische Einstellungen
-                    final fallback = Uri.parse(
-                      'package:io.vikunja.app',
-                    );
-                    if (await canLaunchUrl(fallback)) {
-                      await launchUrl(fallback);
-                    }
                   }
                 },
               ),
