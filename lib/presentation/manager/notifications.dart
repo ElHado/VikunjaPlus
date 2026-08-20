@@ -7,7 +7,6 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:timezone/timezone.dart' as tz;
-import 'package:timezone/data/latest_all.dart' as tz_data;
 import 'package:vikunja_app/core/network/client.dart';
 import 'package:vikunja_app/data/data_sources/settings_data_source.dart';
 import 'package:vikunja_app/data/data_sources/task_data_source.dart';
@@ -104,47 +103,32 @@ Future<void> markAsDone(int id) async {
 Future<void> snoozeTask(int id) async {
   var datasource = SettingsDatasource(FlutterSecureStorage());
   var snoozeMinutes = await datasource.getSnoozeDuration();
-  var localTimezone = await FlutterTimezone.getLocalTimezone();
+  var refreshToken = await datasource.getRefreshToken();
+  var base = await datasource.getServer();
 
-  tz_data.initializeTimeZones();
-  var snoozeTime = tz.TZDateTime.now(tz.getLocation(localTimezone))
-      .add(Duration(minutes: snoozeMinutes));
+  if (refreshToken == null || base == null) return;
 
-  FlutterLocalNotificationsPlugin notificationsPlugin =
-      FlutterLocalNotificationsPlugin();
+  Client client = Client(base: base);
+  var ignoreCertificates = await datasource.getIgnoreCertificates();
+  client.setIgnoreCerts(ignoreCertificates);
 
-  var channel = AndroidNotificationDetails(
-    "Vikunja1",
-    "Fälligkeits-Benachrichtigungen",
-    channelDescription: 'Benachrichtigungen für fällige Aufgaben und Erinnerungen',
-    icon: 'vikunja_notification_logo',
-    importance: Importance.high,
-    actions: <AndroidNotificationAction>[
-      AndroidNotificationAction(_notificationActionDone, 'Erledigt'),
-      AndroidNotificationAction(_notificationActionSnooze, 'Erinnern'),
-    ],
+  TaskRepository taskService = TaskRepositoryImpl(TaskDataSource(client));
+  var response = await taskService.getTask(id);
+
+  if (!response.isSuccessful) return;
+
+  var task = response.toSuccess().body;
+  task.dueDate = DateTime.now().add(Duration(minutes: snoozeMinutes));
+  await taskService.update(task);
+
+  await updateWidget();
+
+  final SendPort? sendPort = IsolateNameServer.lookupPortByName(
+    _actionDonePortName,
   );
-  var platformDetails = NotificationDetails(android: channel);
-
-  String label;
-  if (snoozeMinutes < 60) {
-    label = '$snoozeMinutes min';
-  } else if (snoozeMinutes == 1440) {
-    label = '24 h';
-  } else {
-    label = '${snoozeMinutes ~/ 60} h';
+  if (sendPort != null) {
+    sendPort.send(task.id);
   }
-
-  await notificationsPlugin.cancel(id: id);
-  await notificationsPlugin.zonedSchedule(
-    id: id,
-    title: 'Erinnerung',
-    body: 'Verschoben um $label',
-    scheduledDate: snoozeTime,
-    notificationDetails: platformDetails,
-    androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-    payload: id.toString(),
-  );
 }
 
 class NotificationHandler {
