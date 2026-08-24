@@ -311,12 +311,13 @@ class NotificationHandler {
     );
   }
 
-  void sendTestNotification() {
+  void sendTestNotification() async {
+    final details = await _buildDetailsWithSnooze(false);
     notificationsPlugin.show(
       id: Random().nextInt(10000000),
       title: _testNotificationTitle,
       body: _testNotificationBody,
-      notificationDetails: platformChannelSpecificsReminders,
+      notificationDetails: details,
     );
   }
 
