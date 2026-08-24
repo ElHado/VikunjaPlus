@@ -1,209 +1,140 @@
 # Changelog
 
-Alle nennenswerten Änderungen an diesem Fork werden hier dokumentiert.
+All notable changes to the **Vikunja+** project will be documented in this file.
 
-Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
-die Versionierung an [Semantic Versioning](https://semver.org/lang/de/).
+---
 
-## [0.45.0] - 2026-08-18
+## [0.4.5] - 2026-08-24
 
-### Hinzugefügt
+### Added
+* **Global Table View Switch:** Added project-wide Table view toggle in the main screen overflow menu (`...`).
+* **Table Sorting:** Table view columns are now fully sortable.
+* **Informative Snooze Action:** Push notification snooze button now explicitly displays the configured snooze duration (e.g., "+30m") for better visibility.
 
-- **Tabellenansicht auf Startseite:** Über `...`-Menü zwischen Liste und
-  Tabelle umschaltbar (mit Spalte "Projekt")
-- **ARB:** `project`-Key bereits vorhanden
+---
 
-### Geändert
+## [0.4.0] - 2026-08-24
 
-- **Version 0.45.0**
+### Added
+* **Table View:** Introduced a dedicated Tabular view for tasks.
 
-## [0.4.0] - 2026-08-18
+### Fixed
+* **Table View Checkboxes:** Resolved an issue where checkboxes were displaying incorrect states in Table view.
 
-### Hinzugefügt
+---
 
-- **Tabellenansicht:** Neue Ansicht für Projekte mit sortierbaren Spalten
-  (Titel, Fälligkeit, Priorität, Zuständig, Labels)
-- **ARB:** Neue Keys `assignee`, `labels` (DE/EN)
+## [0.3.2] - 2026-08-20
 
-### Geändert
+### Fixed
+* **Scrolling Performance:** Optimized list scrolling behavior across large task lists to eliminate stutter.
+* **Notification Labels:** Renamed misleading "Remind" action label to "Snooze" / "Reschedule".
 
-- **Package:** `io.vikunja.app` → `vikunjaplus.app` (kein Konflikt mit Original)
-- **Version 0.4.0**
+### Changed
+* **App Package ID:** Renamed package identifier from `io.vikunja.app` to `vikunjaplus.app`.
+* **Login URL Input:** Optimized URL text fields for smoother self-hosted server setup.
 
-## [0.3.2] - 2026-08-18
+### Added
+* **Android Settings Integration:** Added a button in App Settings that opens Android's system `AppInfo` screen with instructions for setting up reliable notification permissions and battery exclusions.
 
-### Geändert
+---
 
-- **Snooze-Button** umbenannt: "Erinnern" → "Aufgabe schieben"
-- **Neuer Einstellungsbutton:** "Energieeinstellungen & Hintergrund" öffnet App-Infoseite (Batterieoptimierung, Akku-Einstellungen, "Nicht pausieren")
-- **Version 0.3.2**
+## [0.3.1] - 2026-08-20
 
-## [0.3.1] - 2026-08-18
+### Added
+* **Task Time Preset:** Added `10:00 AM` preset option and shifted `09:00 AM` to `08:00 AM` in the quick task creation dialog for better daily coverage.
+* **Interactive Snooze Action:** Added a functional "Snooze" button directly in system push notifications.
+  * Configurable snooze duration settings.
+  * Synchronizes rescheduled time back to the Vikunja server task.
 
-### Hinzugefügt
+### Changed
+* **Custom User-Agent:** Updated app User-Agent header to `Vikunja+ Mobile App` for cleaner server logging and identification.
 
-- **Snooze-Button in Benachrichtigungen:** Task per "Erinnern" um konfigurierbare Zeit verschieben (ändert dueDate auf dem Server)
-- **Einstellungen:** Snooze-Dauer einstellbar (15 Min – 6 Std. + 24h/Auf morgen)
+### Fixed
+* **List Rendering:** Further optimizations for smoother task list scrolling and widget rebuilds.
 
-### Geändert
+---
 
-- **6. Uhrzeit-Vorgabe 10:00** hinzugefügt (08, 10, 12, 15, 18, 21)
-- **Snooze-Standard** auf 30 Minuten geändert
+## [0.3.0] - 2026-08-19
 
-## [0.3.0] - 2026-08-18
+### Changed
+* **HTML Editor Replacement:** Replaced `html_editor_enhanced` and removed `flutter_inappwebview_android` dependency (unblocking modern Gradle/AGP updates).
+* **Plain Text Fields:** Task descriptions and comments now use clean plain-text fields with visual warnings (orange) when saving rich-text server tasks. Existing HTML descriptions from server remain readable.
 
-### Geändert
+### Fixed
+* **Keyboard UX:** Automatically collapses soft keyboard when selecting dates or times in task creation to keep dialogs visible.
+* **Duplicate Notifications:** Resolved duplicate notification alerts when both a reminder and a due date are set (reminder takes priority).
 
-- **Major Build-Upgrade:** Gradle 9.5.0 + AGP 9.3.1 + Kotlin 2.3.20
-- **compileSdk:** Auf 36 aktualisiert
-- **HTML-Editor entfernt:** Plain-Text mit HTML-Stripping + Warnhinweis
-- **Abhängigkeiten bereinigt:** `html_editor_enhanced`, `flutter_inappwebview`,
-  `cronet_http` entfernt
+### Toolchain Upgrades
+* **Gradle:** Upgraded 8.14 ➔ 9.1.0 ➔ **9.5.0**
+* **AGP:** Upgraded 8.12.3 ➔ 9.0.1 ➔ **9.3.1**
+* **Kotlin:** Upgraded to **2.3.20**
 
-### Behoben
-
-- **Doppelte Notifications:** Nur noch eine pro Task (Erinnerung statt Fällig)
-- **Kanban:** Tasks erscheinen sofort nach Hinzufügen/Erledigen
-- **Tastatur:** Wird bei Tag/Uhrzeit-Auswahl automatisch ausgeblendet
+---
 
 ## [0.2.4] - 2026-08-18
 
-### Geändert
+### Added
+* **Widget Localization:** Added German and English translation support for the Home Screen Widget.
+* **Widget Refresh:** Widget automatically updates on app launch and according to background interval settings.
+* **Preset Time Slots:** Time picker preset options added to quick task creation.
+* **Server URL Display:** Server URL now visibly displayed under settings.
 
-- **Aufgaben-Dialog:** Neue Aufteilung in Tag-Auswahl + Uhrzeit-Auswahl
-  (Keine, Heute, Morgen, 1 Woche, Nächsten Montag + 08:00, 12:00, 15:00, 18:00, 21:00)
-- **Benutzerdefiniert** öffnet jetzt direkt Datum+Zeit-Picker (mit Vorlage)
-- **Widget:** Lokalisierung via Android String-Resources (DE/EN)
-- **Widget:** Aktualisiert sich jetzt beim App-Start
+### Changed
+* **Task Dialog Overhaul:** Redesigned date/time selection UI. Custom date picker now directly inherits template selections.
+* **Kanban Board:** Added automatic board refresh upon completing or modifying tasks.
 
-### Behoben
-
-- **Kanban-Ansicht:** Neu erstellte Tasks erscheinen sofort im Bucket
-- **Kanban-Ansicht:** Erledigte Tasks verschwinden sofort aus dem Bucket
+---
 
 ## [0.2.3] - 2026-08-18
 
-### Geändert
+### Added
+* **Branding:** Rebranded app as **Vikunja+** with a new app logo.
+* **License & Attribution:** Added MIT License and fork attribution back to upstream repository.
 
-- **App-Name:** App heißt jetzt **Vikunja+** (Debug: *Vikunja+ (Dev)*).
-- **Aufgeräumt:** Nicht mehr verwendete Konstanten entfernt (`repo`,
-  `vStandardVerticalPadding`)
-- **LICENSE:** Auf ElHado + 2026 aktualisiert
+### Housekeeping
+* Cleaned up unused constants and legacy configurations.
 
-### Hinzugefügt
-
-- **Einstellungen:** Server-URL wird über der Versionsnummer angezeigt
-- **Einstellungen:** Fork-Hinweis ist jetzt klickbar (öffnet go-vikunja/app auf GitHub)
-- **Einstellungen:** MIT License-Hinweis unter dem Fork-Link
-- **Einstellungen:** App-Version wird über dem Abmelden-Button angezeigt
+---
 
 ## [0.2.2] - 2026-08-17
 
-### Behoben
+### Removed
+* **Sentry Telemetry:** Removed all Sentry tracking, DSN initializations, error scope captures, and dialogs. Replaced exceptions with `developer.log()`.
+* **Upstream Update Checker:** Removed GitHub API calls to `go-vikunja/app` (updates handled via F-Droid / Play Store).
 
-- **HTML-Tags in Benachrichtigungen entfernt**
-  Task-Beschreibungen werden von Vikunja als HTML gespeichert. Die Tags
-  wurden nun sichtbar in Benachrichtigungen angezeigt. Ein HTML-Stripper
-  bereinigt den Text vor der Anzeige.
-- **Runtime-Absturz beim App-Start behoben**
-  `AppLocalizations.of(context)` wurde in `initNotifications()` von
-  `initState()` aus aufgerufen, bevor der Widget-Baum vollständig war.
-  Jetzt wird der Default-Konstruktor von `NotificationHandler` genutzt.
+### Fixed
+* Fixed `AppLocalizations` initialization context issues in `initState()`.
+* Re-enabled visible app version display in settings.
 
-### Entfernt
-
-- **Sentry komplett entfernt** – Der hartkodierte DSN gehörte den
-  Original-Entwicklern.
-- **Versions-Check entfernt** – Kein GitHub-API-Call mehr gegen das
-  Original-Repo.
-
-### Geändert
-
-- **Hintergrund-Aktualisierungsintervall:** Textfeld + Save-Button durch
-  Schieberegler ersetzt. Default auf 30 Minuten (war 0 = aus).
-- **Benachrichtigungen:** Titel ist jetzt der Task-Name, Text die
-  Task-Beschreibung. Action-Button "Done" → "Erledigt", lokalisiert.
-- **Aufgabensortierung:** Neue Option im Projekt-Bearbeiten-Dialog
-  "Nach Fälligkeit sortieren" (umschaltbar).
-- **Android-Tooling:** Kotlin von 2.2.20 auf 2.3.20 aktualisiert.
+---
 
 ## [0.2.1] - 2026-08-16
 
-### Behoben
+### Added
+* **Enhanced Push Notifications:** Formatted push notifications with task title, plain text notes, and an inline "Mark as Done" action button.
+* **Background Refresh Slider:** Replaced raw text input with an intuitive background refresh slider (15 min – 6 hrs, default: 30 mins).
+* **Chronological Task Sorting:** Added per-project task sorting options (manual vs. chronological).
 
-- **HTML-Tags in Benachrichtigungen entfernt**
-  Die Task-Beschreibung wird von Vikunja als HTML gespeichert (z. B.
-  `<p>Text</p>`). In Benachrichtigungen wurden diese Tags nun sichtbar
-  angezeigt. Ein HTML-Stripper bereinigt den Text vor der Anzeige.
-- **Default Background-Refresh auf 30 Minuten** (war 0 = aus)
-  Erinnerungen funktionieren jetzt out-of-the-box, ohne dass der User
-  das Intervall erst in den Einstellungen setzen muss.
-
-### Geändert
-
-- **Background-Refresh-Einstellung:** Textfeld + Save-Button durch
-  Schieberegler ersetzt. Stufen: Aus, 15/30/45 Min, 1–6 Stunden.
-  Speichert automatisch beim Loslassen.
-- **Notification-Titel und -Text:** Titel ist jetzt der Task-Name
-  (statt "Due Reminder" / "Reminder"), Text ist die Task-Beschreibung
-  (statt "The task 'X' is due" / "This is your reminder for 'X'").
-- **Notification-Lokalisierung:** Action-Button "Done" → "Erledigt",
-  Android-Channel-Namen auf Deutsch, alle Notification-Strings jetzt
-  über ARB übersetzbar.
-- **Aufgabensortierung in Projekten:** Neue Option im Projekt-Bearbeiten-
-  Dialog "Nach Fälligkeit sortieren" – Aufgaben werden dann aufsteigend
-  nach Fälligkeitsdatum sortiert (aktuellste zuerst). Standard ist die
-  bisherige manuelle Sortierung.
+---
 
 ## [0.2.0] - 2026-08-16
 
-### Hinzugefügt
+### Added
+* German translation (DE) localization support.
+* Initial branding updates and UI text truncation fixes.
 
-- **Deutsche Übersetzung komplettiert**
-  Die App ist jetzt vollständig auf Deutsch nutzbar. Alle ~150 Textschlüssel
-  wurden übersetzt (Menüs, Fehlermeldungen, Prioritäten, Einstellungen, etc.).
-- **Eigenes App-Logo** – das Fork-Logo ersetzt das originale Vikunja-Logo.
+---
 
-### Behoben
+## [0.1.9] - 2026-08-14
 
-- **Text-Overflow im Menü** – der deutsche Text "Nur Aufgaben mit
-  Fälligkeitsdatum" war länger als der verfügbare Platz im Popup-Menü.
-  Gekürzt und damit den gelb-schwarzen Overflow-Indikator entfernt.
+### Fixed
+* Fixed notification persistence across app restarts.
+* Resolved unhandled network HTTP exceptions.
+* Fixed list reordering bug (`onReorder` ➔ `onReorderItem`).
+* Resolved all `dart analyze` compiler warnings/errors.
 
-## [0.1.9] - 2026-08-13
+---
 
-### Behoben
+## [0.1.8]
 
-- **Benachrichtigungen bleiben nach App-Start erhalten**
-  Bisher wurde bei jedem Hintergrund-Sync `cancelAll()` aufgerufen, wodurch
-  alle Benachrichtigungen gelöscht wurden – auch die, die bereits in der
-  Notification-Leiste angezeigt wurden. Jetzt werden nur noch die noch
-  geplanten (pending) Benachrichtigungen ersetzt. Bereits angezeigte bleiben
-  stehen, bis sie manuell bearbeitet oder entfernt werden.
-- **Unbehandelte Netzwerk-Exceptions im HTTP-Client behoben**
-  In `get/delete/post/put` wurde ein `Future` ohne `await` aus einem
-  `try`-Block zurückgegeben. Dadurch wurden Exceptions (z. B. Timeouts)
-  nicht vom `catch`-Block abgefangen und konnten unbehandelt durchschlagen.
-  Der Rückgabewert wird jetzt awaited.
-- **Dasselbe Muster in `HomePage.scheduleIntent()` behoben**
-  Ein `return` eines `Future` in einer `void`-Methode ließ Fehler im
-  `try`-Block ungefangen durchlaufen – jetzt mit `await` abgesichert.
-
-### Geändert
-
-- **Task-Reihenfolge: `onReorder` → `onReorderItem`**
-  Der alte Callback ist in Flutter 3.41+ deprecated. Die manuelle
-  Index-Korrektur (`newIndex -= 1`) wurde entfernt, da der neue Callback
-  die Indizes bereits korrigiert liefert – eine doppelte Korrektur hätte
-  Tasks an falsche Positionen verschoben.
-
-### Sonstiges
-
-- Experimentelle Sentry-Option `profilesSampleRate` entfernt (Analyzer-Warnung).
-- `custom_lint`-Plugin aus der Analyzer-Konfiguration entfernt
-  (inkompatibel mit Dart 3.13; Riverpod-Major-Upgrade später möglich).
-- Unnötigen Cast in einem Test entfernt.
-- **Codebasis ist nun analyzer-frei:** `dart analyze` meldet 0 Issues,
-  alle 181 Tests laufen durch.
-
-[0.1.9]: https://github.com/go-vikunja/app/compare/v0.1.8-beta...HEAD
+* Initial upstream release baseline from `go-vikunja/app`.

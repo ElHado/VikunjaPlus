@@ -1,84 +1,83 @@
-# Vikunja+ — Fork of the Vikunja Cross-Platform App
+# Vikunja+ 🚀
 
-**Vikunja+** is a personal fork of the official [Vikunja App](https://github.com/go-vikunja/app) (MIT License).
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Flutter](https://img.shields.io/badge/Flutter-Cross--Platform-02569B?logo=flutter)](https://flutter.dev)
 
-Vikunja is a fluffy, open-source, self-hostable to-do app. This fork contains
-customizations and enhancements for personal use.
+**Vikunja+** is an enhanced, privacy-focused community fork of the official [Vikunja Mobile App](https://github.com/go-vikunja/app). 
 
-## Changes from Original (v0.1.8 → v0.3.1)
+Vikunja is a feature-rich, self-hostable task management platform. **Vikunja+** builds upon the official Flutter application to deliver performance improvements, modern Android toolchain updates, battery/notification reliability fixes, flexible views (including Kanban and Table views), and streamlined task management workflows.
 
-### Build & Tooling
-- Gradle: 8.14 → **9.5.0**
-- AGP: 8.12.3 → **9.3.1**
-- Kotlin: 2.2.20 → **2.3.20**
-- compileSdk: flutter-default → **36**
-- `android.newDsl=false` for AGP 9 compatibility
-- `kotlin.incremental=false` to prevent cache conflicts on Windows
+---
 
-### Removed Dependencies
-- **Sentry** (DSN belonged to upstream developers)
-- **Version check** (GitHub API call to go-vikunja/app)
-- **`html_editor_enhanced`** + entire `flutter_inappwebview` family (replaced by plain text editor)
-- **`cronet_http`** (replaced by `IOClient()` fallback)
-- 29 transitive dependencies cleaned up
+## ✨ Key Enhancements & Features
 
-### Branding
-- App name: **Vikunja → Vikunja+**
-- Custom app icon + notification icon
-- User-Agent: `"Vikunja+ Mobile App"`
-- README + AI transparency notice
-- LICENSE: Original copyright (go-vikunja/app) + **ElHado**
+### 📊 Flexible Task Views (Kanban & Sortable Table View)
+* **Interactive Table View:** View your tasks in a clean tabular format across all projects, featuring full column sorting and instant completion toggles.
+* **Global View Switching:** Easily switch to the Table view project-wide directly from the main screen's top menu (`...`).
+* **Instant Kanban Refresh:** Real-time column updates — tasks instantly appear or disappear from Kanban columns upon status updates.
 
-### Notifications
-- HTML tags stripped from task descriptions
-- Task title as notification title, description as body text
-- **Snooze button** ("Remind") — configurable duration (15 min – 24h)
-- **No duplicate notifications** (reminder overrides due date notification)
-- Widget localized to German (English via system locale)
-- Widget updates on app start
+### 🔔 Smart Notifications & Actionable Controls
+* **Actionable System Notifications:** Complete tasks or snooze them directly from your system notifications.
+* **Informative Snooze Buttons:** Notification buttons display the configured snooze duration (e.g., "+30m") so you always know what action is being taken.
+* **Server-Synced Snooze:** Snoozing reschedules both local alerts and the remote server task.
+* **Smart Duplication Prevention:** Prevents double alerts when both a reminder and a due date are set (prioritizes the exact reminder time).
+* **Clean Text Body:** Strips HTML formatting from task notes to display crisp, readable notifications.
 
-### Task Dialog
-- **Day presets:** None, Today, Tomorrow, 1 Week, Next Monday
-- **Time presets:** 08:00, 10:00, 12:00, 15:00, 18:00, 21:00
-- **"Custom"** opens date+time picker directly (with preselection)
-- **Keyboard hides** on selection
-- HTML editor replaced by **plain text** with format warning
+### ⚡ Modern Toolchain & High-Performance Core
+* **Updated Stack:** Modernized to **Gradle 9.5.0**, **Android Gradle Plugin (AGP) 9.3.1**, and **Kotlin 2.3.20** targeting **SDK 36**.
+* **Smooth Scrolling:** Refactored task list rendering to eliminate micro-stutters across large task lists.
+* **Privacy-First & Lightweight:** Telemetry tracking (Sentry) and heavy embedded web views (`html_editor_enhanced` / `flutter_inappwebview`) have been completely removed for faster startup, smaller APK size, and enhanced privacy.
 
-### Kanban Board
-- Tasks appear **immediately** after adding
-- Tasks disappear **immediately** after completing
+### 📝 Streamlined Task Creation & Input UX
+* **Optimized URL & Login Fields:** Improved URL text input handling for hassle-free self-hosted server connections.
+* **Quick Date & Time Presets:** Instant day presets (*Today, Tomorrow, 1 Week, Next Monday*) and time quick-picks (*08:00, 10:00, 12:00, 15:00, 18:00, 21:00*).
+* **Smart UI Behavior:** Soft keyboard automatically collapses when selecting dates or times to keep input dialogs fully visible.
+* **Plain Text Editor:** Replaced heavy webview editors with a lightweight text editor (includes clear formatting loss warnings when modifying rich-text server notes).
 
-### Background Refresh
-- Slider instead of text field (15 min – 6 h)
-- Default: **30 minutes** (was 0=off)
+### 🏠 Home Screen Widget & System Integration
+* **Bi-lingual Home Widget:** Native home screen widget with German and English localization and configurable background refresh intervals.
+* **Battery & Permission Setup:** Integrated button in Settings opening Android's native `App Info` screen with quick instructions to configure unrestricted background battery execution for reliable reminders.
 
-### Settings
-- **Server URL** displayed above version
-- **Version number** (`v0.3.1`)
-- **Fork link** clickable → GitHub
-- **MIT License** notice
-- **Snooze duration** slider (15 min – 6 h + 24h/Tomorrow)
+---
 
-### Scrolling
-- All lists use standard Flutter ListView with efficient rendering
-- No excessive rebuilds — Riverpod state management ensures minimal widget updates
+## 🛠 Tech Stack & Dependencies Update
 
-### Misc
-- Task sorting per project (manual / chronological)
-- `custom_lint.log` added to `.gitignore`
-- `dueOptionThisWeekend` and `dueOptionLaterThisWeek` removed (simplified day selection)
-- ARB locales (DE/EN) kept 100% in sync
-- Unused constants cleaned up (`repo`, `vStandardVerticalPadding`)
-- `disableRefresh`/`motionPhoto` properties removed from entities
+| Component | Upstream (v0.1.8) | Vikunja+ (v0.4.5) |
+| :--- | :--- | :--- |
+| **Gradle** | 8.14 | **9.5.0** |
+| **AGP** | 8.12.3 | **9.3.1** |
+| **Kotlin** | 2.2.20 | **2.3.20** |
+| **Target SDK** | Default | **36** |
+| **Main Views** | List / Kanban | **List / Kanban / Sortable Table** |
+| **Telemetry / Sentry** | Enabled | **Removed** |
+| **Webview / HTML Editor** | Heavy Webview | **Lightweight Plain Text** |
 
-## AI Transparency Notice
+---
 
-Parts of the source code and the app icon were created with
-assistance from AI tools.
+## ⚙️ Configuration & Permissions
 
-## License
+To ensure background sync and reminders fire accurately on modern Android devices:
+1. Go to **Settings** within Vikunja+.
+2. Tap the **App Info** button to open your system's app settings.
+3. Disable **Battery Optimization** (allow unrestricted background execution) and grant **Exact Alarm / Notification** permissions.
 
-MIT License — see [LICENSE](LICENSE).
+---
 
-Original copyright: (c) 2026 The go-vikunja/app contributors
-Fork copyright: (c) 2026 ElHado
+## 🤖 AI Transparency Notice
+
+Parts of the source code optimizations, refactoring, and project assets (such as the app icon) were created with assistance from AI development tools.
+
+---
+
+## Only tested with Android
+
+Other platforms could work, too but I only test it with Android
+
+---
+
+## 📄 License & Attribution
+
+This project is open-source under the **MIT License**. See the [LICENSE](LICENSE) file for details.
+
+* **Original Work:** Copyright (c) 2026 The go-vikunja/app contributors ([go-vikunja/app](https://github.com/go-vikunja/app))
+* **Vikunja+ Fork:** Copyright (c) 2026 **ElHado**
