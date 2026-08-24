@@ -5,6 +5,18 @@ Alle nennenswerten Änderungen an diesem Fork werden hier dokumentiert.
 Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung an [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.45.0] - 2026-08-18
+
+### Hinzugefügt
+
+- **Tabellenansicht auf Startseite:** Über `...`-Menü zwischen Liste und
+  Tabelle umschaltbar (mit Spalte "Projekt")
+- **ARB:** `project`-Key bereits vorhanden
+
+### Geändert
+
+- **Version 0.45.0**
+
 ## [0.4.0] - 2026-08-18
 
 ### Hinzugefügt

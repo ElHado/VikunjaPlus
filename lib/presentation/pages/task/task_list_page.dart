@@ -11,16 +11,25 @@ import 'package:vikunja_app/presentation/manager/task_page_controller.dart';
 import 'package:vikunja_app/presentation/pages/error_widget.dart';
 import 'package:vikunja_app/presentation/pages/loading_widget.dart';
 import 'package:vikunja_app/presentation/pages/task/task_edit_page.dart';
+import 'package:vikunja_app/presentation/widgets/due_date_card.dart';
 import 'package:vikunja_app/presentation/widgets/empty_view.dart';
+import 'package:vikunja_app/presentation/widgets/project/kanban/priority_batch.dart';
 import 'package:vikunja_app/presentation/widgets/task/add_task_dialog.dart';
 import 'package:vikunja_app/presentation/widgets/task/task_list_item.dart';
 import 'package:vikunja_app/presentation/widgets/task_bottom_sheet.dart';
 
-class TaskListPage extends ConsumerWidget {
+class TaskListPage extends ConsumerStatefulWidget {
   const TaskListPage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<TaskListPage> createState() => _TaskListPageState();
+}
+
+class _TaskListPageState extends ConsumerState<TaskListPage> {
+  bool _showTableView = false;
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     var pageModel = ref.watch(taskPageControllerProvider);
 
@@ -40,7 +49,9 @@ class TaskListPage extends ConsumerWidget {
                 }
                 return false;
               },
-              child: _buildList(ref, context, model),
+              child: _showTableView
+                  ? _buildTable(ref, context, model)
+                  : _buildList(ref, context, model),
             ),
           ),
           floatingActionButton: FloatingActionButton(
@@ -92,6 +103,129 @@ class TaskListPage extends ConsumerWidget {
     }
   }
 
+  Widget _buildTable(WidgetRef ref, BuildContext context, TaskPageModel model) {
+    if (model.tasks.isEmpty) {
+      return EmptyView(Icons.table_chart, AppLocalizations.of(context).noTasks);
+    }
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
+
+    // Sortierung: nach Fälligkeit (Standard)
+    final sorted = List<Task>.from(model.tasks);
+    sorted.sort((a, b) {
+      if (!a.hasDueDate && !b.hasDueDate) return 0;
+      if (!a.hasDueDate) return 1;
+      if (!b.hasDueDate) return -1;
+      return a.dueDate!.compareTo(b.dueDate!);
+    });
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: SingleChildScrollView(
+        child: DataTable(
+          headingRowColor: WidgetStateProperty.all(
+            theme.colorScheme.surfaceContainerHighest,
+          ),
+          dataRowMinHeight: 48,
+          dataRowMaxHeight: 72,
+          columnSpacing: 24,
+          horizontalMargin: 16,
+          columns: [
+            DataColumn(label: Text(l10n.title, style: TextStyle(fontWeight: FontWeight.w600))),
+            DataColumn(label: Text(l10n.dueDateLabel, style: TextStyle(fontWeight: FontWeight.w600))),
+            DataColumn(label: Text(l10n.priority, style: TextStyle(fontWeight: FontWeight.w600))),
+            DataColumn(label: Text(l10n.project, style: TextStyle(fontWeight: FontWeight.w600))),
+            DataColumn(label: Text(l10n.assignee, style: TextStyle(fontWeight: FontWeight.w600))),
+            DataColumn(label: Text(l10n.labels, style: TextStyle(fontWeight: FontWeight.w600))),
+          ],
+          rows: sorted.map((task) {
+            return DataRow(
+              color: WidgetStateProperty.resolveWith<Color?>((states) {
+                if (sorted.indexOf(task).isEven) {
+                  return theme.colorScheme.surfaceContainerLow;
+                }
+                return null;
+              }),
+              cells: [
+                DataCell(
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SizedBox(
+                        width: 24, height: 24,
+                        child: Checkbox(
+                          value: task.done,
+                          onChanged: (value) {
+                            task.done = value ?? false;
+                            ref.read(taskPageControllerProvider.notifier).markAsDone(task);
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Flexible(
+                        child: GestureDetector(
+                          onTap: () => _showTaskBottomSheet(context, task),
+                          child: Text(
+                            task.title,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: task.done
+                                ? TextStyle(
+                                    decoration: TextDecoration.lineThrough,
+                                    color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.5),
+                                  )
+                                : null,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                DataCell(
+                  task.hasDueDate
+                      ? DueDateCard(task.dueDate!)
+                      : Text('-', style: theme.textTheme.bodySmall),
+                ),
+                DataCell(
+                  task.priority != null && task.priority != 0
+                      ? PriorityBatch(task.priority!)
+                      : Text('-', style: theme.textTheme.bodySmall),
+                ),
+                DataCell(
+                  task.project != null
+                      ? Text(task.project!.title, overflow: TextOverflow.ellipsis, maxLines: 1)
+                      : Text('-', style: theme.textTheme.bodySmall),
+                ),
+                DataCell(
+                  task.createdBy != null
+                      ? Text(task.createdBy!.name, overflow: TextOverflow.ellipsis, maxLines: 1)
+                      : Text('-', style: theme.textTheme.bodySmall),
+                ),
+                DataCell(
+                  task.labels.isNotEmpty
+                      ? Wrap(
+                          spacing: 4, runSpacing: 2,
+                          children: task.labels.take(3).map((label) {
+                            return Container(
+                              padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: label.color?.withValues(alpha: 0.2) ?? theme.colorScheme.surfaceContainerHighest,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(label.title, style: TextStyle(fontSize: 11), overflow: TextOverflow.ellipsis),
+                            );
+                          }).toList(),
+                        )
+                      : Text('-', style: theme.textTheme.bodySmall),
+                ),
+              ],
+            );
+          }).toList(),
+        ),
+      ),
+    );
+  }
+
   AppBar _buildAppBar(WidgetRef ref, BuildContext context, bool onlyDueDate) {
     return AppBar(
       title: Text("Vikunja+"),
@@ -115,6 +249,29 @@ class TaskListPage extends ConsumerWidget {
                         onChanged: (bool? value) {
                           _onlyDueDateChanged(ref, context, !onlyDueDate);
                         },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              PopupMenuItem(
+                child: InkWell(
+                  onTap: () {
+                    Navigator.pop(context);
+                    setState(() => _showTableView = !_showTableView);
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text(
+                        _showTableView
+                            ? 'Listenansicht'
+                            : 'Tabellenansicht',
+                      ),
+                      SizedBox(width: 8),
+                      Icon(
+                        _showTableView ? Icons.view_list : Icons.table_chart,
+                        size: 20,
                       ),
                     ],
                   ),
