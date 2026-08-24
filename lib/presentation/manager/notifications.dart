@@ -327,6 +327,33 @@ class NotificationHandler {
         ?.requestPermissions(alert: true, badge: true, sound: true);
   }
 
+  /// Erzeugt NotificationDetails mit dynamischem Snooze-Label
+  Future<NotificationDetails> _buildDetailsWithSnooze(bool isDueDate) async {
+    var datasource = SettingsDatasource(FlutterSecureStorage());
+    var snoozeMinutes = await datasource.getSnoozeDuration();
+    String snoozeLabel;
+    if (snoozeMinutes < 60) {
+      snoozeLabel = '$_snoozeActionLabel: $snoozeMinutes min';
+    } else if (snoozeMinutes == 1440) {
+      snoozeLabel = '$_snoozeActionLabel: 24 h';
+    } else {
+      snoozeLabel = '$_snoozeActionLabel: ${snoozeMinutes ~/ 60} h';
+    }
+
+    var androidDetails = AndroidNotificationDetails(
+      isDueDate ? "Vikunja1" : "Vikunja2",
+      isDueDate ? _channelDueName : _channelReminderName,
+      channelDescription: _channelDescription,
+      icon: 'vikunja_notification_logo',
+      importance: Importance.high,
+      actions: <AndroidNotificationAction>[
+        AndroidNotificationAction(_notificationActionDone, _doneActionLabel),
+        AndroidNotificationAction(_notificationActionSnooze, snoozeLabel),
+      ],
+    );
+    return NotificationDetails(android: androidDetails, iOS: iOSSpecifics);
+  }
+
   Future<void> scheduleDueNotifications(TaskRepository taskService) async {
     var taskResponse = await taskService.getByFilterString(
       "done=false && (due_date > now || reminders > now)",
@@ -343,6 +370,11 @@ class NotificationHandler {
       for (final p in pending) {
         await notificationsPlugin.cancel(id: p.id);
       }
+
+      // Dynamische Details mit aktuellem Snooze-Label
+      final detailsReminder = await _buildDetailsWithSnooze(false);
+      final detailsDueDate = await _buildDetailsWithSnooze(true);
+
       for (final task in taskResponse.toSuccess().body) {
         if (task.done) continue;
         for (final reminder in task.reminderDates) {
@@ -357,7 +389,7 @@ class NotificationHandler {
             notificationsPlugin,
             reminder.reminder,
             await FlutterTimezone.getLocalTimezone(),
-            platformChannelSpecificsReminders,
+            detailsReminder,
           );
         }
         // Nur Due-Notification schedulen, wenn keine Erinnerungen gesetzt sind
@@ -373,7 +405,7 @@ class NotificationHandler {
             notificationsPlugin,
             task.dueDate!,
             await FlutterTimezone.getLocalTimezone(),
-            platformChannelSpecificsDueDate,
+            detailsDueDate,
           );
         }
       }
