@@ -15,6 +15,7 @@ import 'package:vikunja_app/presentation/pages/loading_widget.dart';
 import 'package:vikunja_app/presentation/pages/project/project_edit.dart';
 import 'package:vikunja_app/presentation/widgets/project/kanban/kanban_widget.dart';
 import 'package:vikunja_app/presentation/widgets/project/project_task_list.dart';
+import 'package:vikunja_app/presentation/widgets/project/table/project_table_view.dart';
 import 'package:vikunja_app/presentation/widgets/task/add_task_dialog.dart';
 
 class ProjectDetailPage extends ConsumerStatefulWidget {
@@ -96,6 +97,8 @@ class ProjectPageState extends ConsumerState<ProjectDetailPage> {
         return ProjectTaskList(project);
       case ViewKind.kanban:
         return KanbanWidget(project: project);
+      case ViewKind.table:
+        return ProjectTableView(project);
       default:
         return Text(AppLocalizations.of(context).notImplemented);
     }

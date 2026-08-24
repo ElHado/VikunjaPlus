@@ -71,6 +71,8 @@
   "repeatAfter": "Repeat after",
   "noDescription": "No description",
   "dueDateLabel": "Due Date",
+  "assignee": "Assignee",
+  "labels": "Labels",
   "startDateLabel": "Start Date",
   "endDateLabel": "End Date",
   "reminder": "Reminder",

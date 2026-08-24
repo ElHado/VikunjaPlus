@@ -5,6 +5,19 @@ Alle nennenswerten Änderungen an diesem Fork werden hier dokumentiert.
 Das Format orientiert sich an [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung an [Semantic Versioning](https://semver.org/lang/de/).
 
+## [0.4.0] - 2026-08-18
+
+### Hinzugefügt
+
+- **Tabellenansicht:** Neue Ansicht für Projekte mit sortierbaren Spalten
+  (Titel, Fälligkeit, Priorität, Zuständig, Labels)
+- **ARB:** Neue Keys `assignee`, `labels` (DE/EN)
+
+### Geändert
+
+- **Package:** `io.vikunja.app` → `vikunjaplus.app` (kein Konflikt mit Original)
+- **Version 0.4.0**
+
 ## [0.3.2] - 2026-08-18
 
 ### Geändert

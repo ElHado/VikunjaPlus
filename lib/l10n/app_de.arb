@@ -71,6 +71,8 @@
   "repeatAfter": "Wiederholen nach",
   "noDescription": "Keine Beschreibung",
   "dueDateLabel": "Fälligkeitsdatum",
+  "assignee": "Zuständig",
+  "labels": "Labels",
   "startDateLabel": "Startdatum",
   "endDateLabel": "Enddatum",
   "reminder": "Erinnerung",
