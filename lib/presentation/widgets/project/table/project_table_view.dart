@@ -174,7 +174,6 @@ class _SortableTableState extends State<_SortableTable> {
                 }
                 return null;
               }),
-              onSelectChanged: (_) => _showTaskBottomSheet(context, task),
               cells: [
                 DataCell(
                   Row(
@@ -195,16 +194,19 @@ class _SortableTableState extends State<_SortableTable> {
                       ),
                       const SizedBox(width: 8),
                       Flexible(
-                        child: Text(
-                          task.title,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: task.done
-                              ? TextStyle(
-                                  decoration: TextDecoration.lineThrough,
-                                  color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.5),
-                                )
-                              : null,
+                        child: GestureDetector(
+                          onTap: () => _showTaskBottomSheet(context, task),
+                          child: Text(
+                            task.title,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: task.done
+                                ? TextStyle(
+                                    decoration: TextDecoration.lineThrough,
+                                    color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.5),
+                                  )
+                                : null,
+                          ),
                         ),
                       ),
                     ],
