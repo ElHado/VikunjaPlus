@@ -18,6 +18,15 @@ import 'package:vikunja_app/presentation/widgets/task/add_task_dialog.dart';
 import 'package:vikunja_app/presentation/widgets/task/task_list_item.dart';
 import 'package:vikunja_app/presentation/widgets/task_bottom_sheet.dart';
 
+enum _TableColumn {
+  title,
+  dueDate,
+  priority,
+  project,
+  assignee,
+  labels,
+}
+
 class TaskListPage extends ConsumerStatefulWidget {
   const TaskListPage({super.key});
 
@@ -27,6 +36,62 @@ class TaskListPage extends ConsumerStatefulWidget {
 
 class _TaskListPageState extends ConsumerState<TaskListPage> {
   bool _showTableView = false;
+  _TableColumn _sortColumn = _TableColumn.dueDate;
+  bool _sortAscending = true;
+
+  List<Task> _sortedTasks(List<Task> tasks) {
+    final sorted = List<Task>.from(tasks);
+    sorted.sort((a, b) {
+      int cmp;
+      switch (_sortColumn) {
+        case _TableColumn.title:
+          cmp = a.title.toLowerCase().compareTo(b.title.toLowerCase());
+          break;
+        case _TableColumn.dueDate:
+          if (!a.hasDueDate && !b.hasDueDate) {
+            cmp = 0;
+          } else if (!a.hasDueDate) {
+            cmp = 1;
+          } else if (!b.hasDueDate) {
+            cmp = -1;
+          } else {
+            cmp = a.dueDate!.compareTo(b.dueDate!);
+          }
+          break;
+        case _TableColumn.priority:
+          cmp = (a.priority ?? 0).compareTo(b.priority ?? 0);
+          break;
+        case _TableColumn.project:
+          final aProj = a.project?.title ?? '';
+          final bProj = b.project?.title ?? '';
+          cmp = aProj.toLowerCase().compareTo(bProj.toLowerCase());
+          break;
+        case _TableColumn.assignee:
+          final aName = a.createdBy?.name ?? '';
+          final bName = b.createdBy?.name ?? '';
+          cmp = aName.toLowerCase().compareTo(bName.toLowerCase());
+          break;
+        case _TableColumn.labels:
+          final aLabel = a.labels.isNotEmpty ? a.labels.first.title : '';
+          final bLabel = b.labels.isNotEmpty ? b.labels.first.title : '';
+          cmp = aLabel.toLowerCase().compareTo(bLabel.toLowerCase());
+          break;
+      }
+      return _sortAscending ? cmp : -cmp;
+    });
+    return sorted;
+  }
+
+  void _onSort(_TableColumn column) {
+    setState(() {
+      if (_sortColumn == column) {
+        _sortAscending = !_sortAscending;
+      } else {
+        _sortColumn = column;
+        _sortAscending = true;
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -110,19 +175,14 @@ class _TaskListPageState extends ConsumerState<TaskListPage> {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
 
-    // Sortierung: nach Fälligkeit (Standard)
-    final sorted = List<Task>.from(model.tasks);
-    sorted.sort((a, b) {
-      if (!a.hasDueDate && !b.hasDueDate) return 0;
-      if (!a.hasDueDate) return 1;
-      if (!b.hasDueDate) return -1;
-      return a.dueDate!.compareTo(b.dueDate!);
-    });
+    final sorted = _sortedTasks(model.tasks);
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: SingleChildScrollView(
         child: DataTable(
+          sortColumnIndex: _sortColumn.index,
+          sortAscending: _sortAscending,
           headingRowColor: WidgetStateProperty.all(
             theme.colorScheme.surfaceContainerHighest,
           ),
@@ -131,12 +191,12 @@ class _TaskListPageState extends ConsumerState<TaskListPage> {
           columnSpacing: 24,
           horizontalMargin: 16,
           columns: [
-            DataColumn(label: Text(l10n.title, style: TextStyle(fontWeight: FontWeight.w600))),
-            DataColumn(label: Text(l10n.dueDateLabel, style: TextStyle(fontWeight: FontWeight.w600))),
-            DataColumn(label: Text(l10n.priority, style: TextStyle(fontWeight: FontWeight.w600))),
-            DataColumn(label: Text(l10n.project, style: TextStyle(fontWeight: FontWeight.w600))),
-            DataColumn(label: Text(l10n.assignee, style: TextStyle(fontWeight: FontWeight.w600))),
-            DataColumn(label: Text(l10n.labels, style: TextStyle(fontWeight: FontWeight.w600))),
+            DataColumn(label: Text(l10n.title, style: TextStyle(fontWeight: FontWeight.w600)), onSort: (_, _) => _onSort(_TableColumn.title)),
+            DataColumn(label: Text(l10n.dueDateLabel, style: TextStyle(fontWeight: FontWeight.w600)), onSort: (_, _) => _onSort(_TableColumn.dueDate)),
+            DataColumn(label: Text(l10n.priority, style: TextStyle(fontWeight: FontWeight.w600)), onSort: (_, _) => _onSort(_TableColumn.priority)),
+            DataColumn(label: Text(l10n.project, style: TextStyle(fontWeight: FontWeight.w600)), onSort: (_, _) => _onSort(_TableColumn.project)),
+            DataColumn(label: Text(l10n.assignee, style: TextStyle(fontWeight: FontWeight.w600)), onSort: (_, _) => _onSort(_TableColumn.assignee)),
+            DataColumn(label: Text(l10n.labels, style: TextStyle(fontWeight: FontWeight.w600)), onSort: (_, _) => _onSort(_TableColumn.labels)),
           ],
           rows: sorted.map((task) {
             return DataRow(
