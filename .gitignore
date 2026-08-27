@@ -117,3 +117,5 @@ local.properties
 # pre-commit
 .pre-commit-config.yaml
 custom_lint.log
+key.properties
+upload-keystore.jks
