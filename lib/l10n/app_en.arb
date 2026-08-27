@@ -218,5 +218,8 @@
   "notificationTestTitle": "Test Notification",
   "notificationTestBody": "This is a test notification",
 
-  "sortChronologically": "Sort by due date"
+  "sortChronologically": "Sort by due date",
+  "searchTasks": "Search tasks",
+  "searchHint": "Type a task name to search across all projects",
+  "searchNoResults": "No tasks found matching your search"
 }

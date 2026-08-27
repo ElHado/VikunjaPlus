@@ -11,6 +11,7 @@ import 'package:vikunja_app/presentation/manager/task_page_controller.dart';
 import 'package:vikunja_app/presentation/pages/error_widget.dart';
 import 'package:vikunja_app/presentation/pages/loading_widget.dart';
 import 'package:vikunja_app/presentation/pages/task/task_edit_page.dart';
+import 'package:vikunja_app/presentation/pages/task/task_search_page.dart';
 import 'package:vikunja_app/presentation/widgets/due_date_card.dart';
 import 'package:vikunja_app/presentation/widgets/empty_view.dart';
 import 'package:vikunja_app/presentation/widgets/project/kanban/priority_batch.dart';
@@ -290,6 +291,14 @@ class _TaskListPageState extends ConsumerState<TaskListPage> {
     return AppBar(
       title: Text("Vikunja+"),
       actions: [
+        IconButton(
+          icon: const Icon(Icons.search),
+          tooltip: AppLocalizations.of(context).searchTasks,
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const TaskSearchPage()),
+          ),
+        ),
         PopupMenuButton(
           itemBuilder: (BuildContext context) {
             return [

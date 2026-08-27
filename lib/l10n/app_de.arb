@@ -218,5 +218,8 @@
   "notificationTestTitle": "Test-Benachrichtigung",
   "notificationTestBody": "Dies ist eine Test-Benachrichtigung",
 
-  "sortChronologically": "Nach Fälligkeit sortieren"
+  "sortChronologically": "Nach Fälligkeit sortieren",
+  "searchTasks": "Aufgaben suchen",
+  "searchHint": "Gib einen Task-Namen ein, um projektübergreifend zu suchen",
+  "searchNoResults": "Keine Aufgaben gefunden"
 }
