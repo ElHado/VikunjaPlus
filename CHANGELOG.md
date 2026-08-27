@@ -4,6 +4,13 @@ All notable changes to the **Vikunja+** project will be documented in this file.
 
 ---
 
+## [0.4.6] - 2026-08-27
+
+### Added
+* **Cross-Project Task Search:** Implemented global task search across all projects, including support for searching completed tasks.
+
+---
+
 ## [0.4.5] - 2026-08-24
 
 ### Added

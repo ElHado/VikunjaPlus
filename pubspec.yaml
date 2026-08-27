@@ -1,7 +1,7 @@
 name: vikunja_app
 description: Vikunja as Flutter cross platform app
 
-version: 0.45.0
+version: 0.4.6
 
 environment:
   sdk: ^3.9.0

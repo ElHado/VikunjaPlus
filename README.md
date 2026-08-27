@@ -5,11 +5,14 @@
 
 **Vikunja+** is an enhanced, privacy-focused community fork of the official [Vikunja Mobile App](https://github.com/go-vikunja/app). 
 
-Vikunja is a feature-rich, self-hostable task management platform. **Vikunja+** builds upon the official Flutter application to deliver performance improvements, modern Android toolchain updates, battery/notification reliability fixes, flexible views (including Kanban and Table views), and streamlined task management workflows.
+Vikunja is a feature-rich, self-hostable task management platform. **Vikunja+** builds upon the official Flutter application to deliver performance improvements, modern Android toolchain updates, battery/notification reliability fixes, flexible views (including Kanban and Table views), cross-project task search, and streamlined task management workflows.
 
 ---
 
 ## ✨ Key Enhancements & Features
+
+### 🔍 Cross-Project Search
+* **Global Task Search:** Search for tasks across all your projects simultaneously, with full support for filtering both active and completed tasks.
 
 ### 📊 Flexible Task Views (Kanban & Sortable Table View)
 * **Interactive Table View:** View your tasks in a clean tabular format across all projects, featuring full column sorting and instant completion toggles.
@@ -42,13 +45,14 @@ Vikunja is a feature-rich, self-hostable task management platform. **Vikunja+** 
 
 ## 🛠 Tech Stack & Dependencies Update
 
-| Component | Upstream (v0.1.8) | Vikunja+ (v0.4.5) |
+| Component | Upstream (v0.1.8) | Vikunja+ (v0.4.6) |
 | :--- | :--- | :--- |
 | **Gradle** | 8.14 | **9.5.0** |
 | **AGP** | 8.12.3 | **9.3.1** |
 | **Kotlin** | 2.2.20 | **2.3.20** |
 | **Target SDK** | Default | **36** |
 | **Main Views** | List / Kanban | **List / Kanban / Sortable Table** |
+| **Global Features** | Basic | **Cross-Project Search (inc. Completed Tasks)** |
 | **Telemetry / Sentry** | Enabled | **Removed** |
 | **Webview / HTML Editor** | Heavy Webview | **Lightweight Plain Text** |
 
@@ -66,12 +70,6 @@ To ensure background sync and reminders fire accurately on modern Android device
 ## 🤖 AI Transparency Notice
 
 Parts of the source code optimizations, refactoring, and project assets (such as the app icon) were created with assistance from AI development tools.
-
----
-
-## Only tested with Android
-
-Other platforms could work, too but I only test it with Android
 
 ---
 
