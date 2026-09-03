@@ -112,44 +112,80 @@ class _TaskStatsPageState extends ConsumerState<TaskStatsPage> {
       final start = _periodStart;
       final end = _periodEnd;
 
-      // Alle Tasks holen (ohne done-Filter für Gesamtanzahl)
-      String filter = '';
+      String timeFilter = '';
       if (start != null) {
-        filter += 'created >= "${start.toIso8601String()}"';
+        timeFilter += 'due_date >= "${start.toIso8601String()}"';
       }
       if (end != null) {
-        if (filter.isNotEmpty) filter += ' && ';
-        filter += 'created <= "${end.toIso8601String()}"';
+        if (timeFilter.isNotEmpty) timeFilter += ' && ';
+        timeFilter += 'due_date <= "${end.toIso8601String()}"';
+      }
+      // Bei Zeitraum: Datum beachten, sonst alle Tasks
+      final baseFilter = timeFilter.isEmpty ? '' : '$timeFilter && ';
+
+      // Alle Tasks mit Pagination abrufen (API limitiert auf 50/Seite)
+      List<Task> allTasks = [];
+      int page = 1;
+      int totalPages = 1;
+
+      while (page <= totalPages) {
+        final response = await taskService.getByFilterString(
+          '${baseFilter}(done=false || done=true)',
+          {'filter_include_nulls': ['false'], 'per_page': ['100'], 'page': ['$page']},
+        );
+
+        if (!response.isSuccessful) {
+          if (allTasks.isEmpty) {
+            if (mounted) setState(() { _error = true; _loading = false; });
+            return;
+          }
+          break;
+        }
+
+        // Pagination-Header auslesen
+        final headers = response.toSuccess().headers;
+        if (page == 1) {
+          totalPages = int.tryParse(headers['x-pagination-total-pages'] ?? '1') ?? 1;
+        }
+
+        allTasks.addAll(response.toSuccess().body);
+        page++;
       }
 
-      // Fallback: alle Tasks laden
-      final allResponse = await taskService.getByFilterString(
-        filter.isEmpty ? 'done=false || done=true' : '$filter && (done=false || done=true)',
-        {'filter_include_nulls': ['false'], 'per_page': ['500']},
-      );
-
       // Erledigte Tasks
-      final doneResponse = await taskService.getByFilterString(
-        '${filter.isEmpty ? '' : '$filter && '}done=true',
-        {'filter_include_nulls': ['false'], 'per_page': ['500']},
-      );
-
-      // Überfällige Tasks
-      final now = DateTime.now();
-      final overdueResponse = await taskService.getByFilterString(
-        'done=false && due_date < "${now.toIso8601String()}"',
-        {'filter_include_nulls': ['false'], 'per_page': ['500']},
-      );
-
-      if (!mounted) return;
-
-      List<Task> allTasks = [];
       List<Task> doneTasks = [];
-      List<Task> overdueTasks = [];
+      page = 1;
+      totalPages = 1;
+      while (page <= totalPages) {
+        final response = await taskService.getByFilterString(
+          '${baseFilter}done=true',
+          {'filter_include_nulls': ['false'], 'per_page': ['100'], 'page': ['$page']},
+        );
+        if (!response.isSuccessful) break;
+        if (page == 1) {
+          totalPages = int.tryParse(response.toSuccess().headers['x-pagination-total-pages'] ?? '1') ?? 1;
+        }
+        doneTasks.addAll(response.toSuccess().body);
+        page++;
+      }
 
-      if (allResponse.isSuccessful) allTasks = allResponse.toSuccess().body;
-      if (doneResponse.isSuccessful) doneTasks = doneResponse.toSuccess().body;
-      if (overdueResponse.isSuccessful) overdueTasks = overdueResponse.toSuccess().body;
+      // Überfällige Tasks (immer aktuell, kein Zeitraum-Filter)
+      final now = DateTime.now();
+      List<Task> overdueTasks = [];
+      page = 1;
+      totalPages = 1;
+      while (page <= totalPages) {
+        final response = await taskService.getByFilterString(
+          'done=false && due_date < "${now.toIso8601String()}"',
+          {'filter_include_nulls': ['false'], 'per_page': ['100'], 'page': ['$page']},
+        );
+        if (!response.isSuccessful) break;
+        if (page == 1) {
+          totalPages = int.tryParse(response.toSuccess().headers['x-pagination-total-pages'] ?? '1') ?? 1;
+        }
+        overdueTasks.addAll(response.toSuccess().body);
+        page++;
+      }
 
       // Statistik berechnen
       int noPri = 0, lowPri = 0, medPri = 0, highPri = 0;

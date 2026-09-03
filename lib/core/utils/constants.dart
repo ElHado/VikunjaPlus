@@ -4,4 +4,4 @@ var minimumServerVersion = Version(2, 3, 0);
 
 const String userAgent = 'Vikunja+ Mobile App';
 
-const String appVersion = '0.4.6';
+const String appVersion = '0.5.0';
