@@ -112,19 +112,6 @@ class _TaskStatsPageState extends ConsumerState<TaskStatsPage> {
       final start = _periodStart;
       final end = _periodEnd;
 
-      String timeFilter = '';
-      if (start != null) {
-        final s = start.toIso8601String().split('T')[0];
-        timeFilter += 'due_date >= "$s 00:00:00"';
-      }
-      if (end != null) {
-        if (timeFilter.isNotEmpty) timeFilter += ' && ';
-        final e = end.toIso8601String().split('T')[0];
-        timeFilter += 'due_date <= "$e 23:59:59"';
-      }
-      // Bei Zeitraum: Datum beachten, sonst alle Tasks
-      final baseFilter = timeFilter.isEmpty ? '' : '$timeFilter && ';
-
       // Alle Tasks mit Pagination abrufen (API limitiert auf 50/Seite)
       List<Task> allTasks = [];
       int page = 1;
@@ -132,7 +119,7 @@ class _TaskStatsPageState extends ConsumerState<TaskStatsPage> {
 
       while (page <= totalPages) {
         final response = await taskService.getByFilterString(
-          '${baseFilter}(done=false || done=true)',
+          'done=false || done=true',
           {'filter_include_nulls': ['false'], 'per_page': ['100'], 'page': ['$page']},
         );
 
@@ -144,7 +131,6 @@ class _TaskStatsPageState extends ConsumerState<TaskStatsPage> {
           break;
         }
 
-        // Pagination-Header auslesen
         final headers = response.toSuccess().headers;
         if (page == 1) {
           totalPages = int.tryParse(headers['x-pagination-total-pages'] ?? '1') ?? 1;
@@ -154,47 +140,29 @@ class _TaskStatsPageState extends ConsumerState<TaskStatsPage> {
         page++;
       }
 
-      // Erledigte Tasks
-      List<Task> doneTasks = [];
-      page = 1;
-      totalPages = 1;
-      while (page <= totalPages) {
-        final response = await taskService.getByFilterString(
-          '${baseFilter}done=true',
-          {'filter_include_nulls': ['false'], 'per_page': ['100'], 'page': ['$page']},
-        );
-        if (!response.isSuccessful) break;
-        if (page == 1) {
-          totalPages = int.tryParse(response.toSuccess().headers['x-pagination-total-pages'] ?? '1') ?? 1;
-        }
-        doneTasks.addAll(response.toSuccess().body);
-        page++;
+      // Zeitraum-Filter in-memory (API hat Probleme mit komplexen Datums-Filtern)
+      List<Task> filteredTasks = allTasks;
+      if (start != null || end != null) {
+        filteredTasks = allTasks.where((task) {
+          if (!task.hasDueDate) return start == null; // ohne Datum nur bei "Alles"
+          if (start != null && task.dueDate!.isBefore(start)) return false;
+          if (end != null && task.dueDate!.isAfter(end)) return false;
+          return true;
+        }).toList();
       }
 
-      // Überfällige Tasks (immer aktuell, kein Zeitraum-Filter)
+      // Erledigte Tasks (in-memory gefiltert)
+      final doneTasks = filteredTasks.where((t) => t.done).toList();
+
+      // Überfällige Tasks (in-memory: done=false + due_date < now)
       final now = DateTime.now();
-      final nowStr = now.toIso8601String().split('T')[0];
-      List<Task> overdueTasks = [];
-      page = 1;
-      totalPages = 1;
-      while (page <= totalPages) {
-        final response = await taskService.getByFilterString(
-          'done=false && due_date < "$nowStr 00:00:00"',
-          {'filter_include_nulls': ['false'], 'per_page': ['100'], 'page': ['$page']},
-        );
-        if (!response.isSuccessful) break;
-        if (page == 1) {
-          totalPages = int.tryParse(response.toSuccess().headers['x-pagination-total-pages'] ?? '1') ?? 1;
-        }
-        overdueTasks.addAll(response.toSuccess().body);
-        page++;
-      }
+      final overdueTasks = allTasks.where((t) => !t.done && t.hasDueDate && t.dueDate!.isBefore(now)).toList();
 
-      // Statistik berechnen
+      // Statistik berechnen (basierend auf gefilterten Tasks)
       int noPri = 0, lowPri = 0, medPri = 0, highPri = 0;
       Map<String, int> projCount = {};
 
-      for (final t in allTasks) {
+      for (final t in filteredTasks) {
         final pri = t.priority ?? 0;
         if (pri == 0) noPri++;
         else if (pri <= 1) lowPri++;
@@ -211,7 +179,7 @@ class _TaskStatsPageState extends ConsumerState<TaskStatsPage> {
 
       setState(() {
         _stats = _StatsData(
-          total: allTasks.length,
+          total: filteredTasks.length,
           done: doneTasks.length,
           overdue: overdueTasks.length,
           noPriority: noPri,
