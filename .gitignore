@@ -119,3 +119,4 @@ local.properties
 custom_lint.log
 key.properties
 upload-keystore.jks
+.hermes/
