@@ -5,16 +5,21 @@
 
 **Vikunja+** is an enhanced, privacy-focused community fork of the official [Vikunja Mobile App](https://github.com/go-vikunja/app). 
 
-Vikunja is a feature-rich, self-hostable task management platform. **Vikunja+** builds upon the official Flutter application to deliver performance improvements, modern Android toolchain updates, battery/notification reliability fixes, flexible views (including Kanban and Table views), cross-project task search, and streamlined task management workflows.
+Vikunja is a feature-rich, self-hostable task management platform. **Vikunja+** builds upon the official Flutter application to deliver performance improvements, modern Android toolchain updates, battery/notification reliability fixes, flexible views (including Kanban, Table, and Analytics views), cross-project task search, and streamlined task management workflows.
 
 ---
 
 ## ✨ Key Enhancements & Features
 
+### 📊 Task Analytics & Visual Statistics
+* **Dedicated Analytics Tab:** Comprehensive dashboard providing real-time insights into open, completed, and overdue tasks.
+* **Time-based Filtering:** Filter task performance and metrics across custom time ranges.
+* **Visual Data Analysis:** Visual breakdown and charts for tracking productivity and workload over time.
+
 ### 🔍 Cross-Project Search
 * **Global Task Search:** Search for tasks across all your projects simultaneously, with full support for filtering both active and completed tasks.
 
-### 📊 Flexible Task Views (Kanban & Sortable Table View)
+### 📋 Flexible Task Views (Kanban & Sortable Table View)
 * **Interactive Table View:** View your tasks in a clean tabular format across all projects, featuring full column sorting and instant completion toggles.
 * **Global View Switching:** Easily switch to the Table view project-wide directly from the main screen's top menu (`...`).
 * **Instant Kanban Refresh:** Real-time column updates — tasks instantly appear or disappear from Kanban columns upon status updates.
@@ -45,14 +50,14 @@ Vikunja is a feature-rich, self-hostable task management platform. **Vikunja+** 
 
 ## 🛠 Tech Stack & Dependencies Update
 
-| Component | Upstream (v0.1.8) | Vikunja+ (v0.4.6) |
+| Component | Upstream (v0.1.8) | Vikunja+ (v0.5.0) |
 | :--- | :--- | :--- |
 | **Gradle** | 8.14 | **9.5.0** |
 | **AGP** | 8.12.3 | **9.3.1** |
 | **Kotlin** | 2.2.20 | **2.3.20** |
 | **Target SDK** | Default | **36** |
-| **Main Views** | List / Kanban | **List / Kanban / Sortable Table** |
-| **Global Features** | Basic | **Cross-Project Search (inc. Completed Tasks)** |
+| **Main Views** | List / Kanban | **List / Kanban / Sortable Table / Task Analytics** |
+| **Global Features** | Basic | **Cross-Project Search & Visual Task Analytics** |
 | **Telemetry / Sentry** | Enabled | **Removed** |
 | **Webview / HTML Editor** | Heavy Webview | **Lightweight Plain Text** |
 

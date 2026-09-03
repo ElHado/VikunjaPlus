@@ -4,14 +4,12 @@ All notable changes to the **Vikunja+** project will be documented in this file.
 
 ---
 
-## [0.5.0] - 2026-08-27
+## [0.5.0] - 2026-09-03
 
 ### Added
-
-* **Task Statistics:** New dedicated statistics tab with overview of completed, open, and overdue tasks.
-* **Filterable by Time Period:** Stats can be filtered by Today, This Week, This Month, This Year, All Time, or a custom date range.
-* **Visual Analytics:** Includes completion rate ring, priority distribution bars, and top project breakdown.
-* **ARB:** 19 new localization keys (DE/EN).
+* **Task Analytics & Statistics Tab:** Introduced a new dedicated analytics tab providing a visual breakdown of open, completed, and overdue tasks.
+* **Time Range Filtering:** Added ability to filter task analytics across different timeframes.
+* **Visual Data Analysis:** Added charts and productivity insights for visual task evaluation.
 
 ---
 
