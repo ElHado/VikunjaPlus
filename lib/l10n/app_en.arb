@@ -221,5 +221,24 @@
   "sortChronologically": "Sort by due date",
   "searchTasks": "Search tasks",
   "searchHint": "Type a task name to search across all projects",
-  "searchNoResults": "No tasks found matching your search"
+  "searchNoResults": "No tasks found matching your search",
+
+  "statsTab": "Statistics",
+  "statsTitle": "Task Statistics",
+  "statsToday": "Today",
+  "statsWeek": "This Week",
+  "statsMonth": "This Month",
+  "statsYear": "This Year",
+  "statsAll": "All Time",
+  "statsCustom": "Custom Range",
+  "statsTotal": "Total Tasks",
+  "statsDone": "Completed",
+  "statsOpen": "Open",
+  "statsOverdue": "Overdue",
+  "statsDoneRate": "Completion Rate",
+  "statsByPriority": "By Priority",
+  "statsPriorityNone": "No Priority",
+  "statsTopProjects": "Top Projects",
+  "statsNoData": "No data available",
+  "statsError": "Failed to load statistics"
 }

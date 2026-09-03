@@ -221,5 +221,24 @@
   "sortChronologically": "Nach Fälligkeit sortieren",
   "searchTasks": "Aufgaben suchen",
   "searchHint": "Gib einen Task-Namen ein, um projektübergreifend zu suchen",
-  "searchNoResults": "Keine Aufgaben gefunden"
+  "searchNoResults": "Keine Aufgaben gefunden",
+
+  "statsTab": "Statistiken",
+  "statsTitle": "Aufgaben-Statistiken",
+  "statsToday": "Heute",
+  "statsWeek": "Diese Woche",
+  "statsMonth": "Dieser Monat",
+  "statsYear": "Dieses Jahr",
+  "statsAll": "Gesamter Zeitraum",
+  "statsCustom": "Eigener Zeitraum",
+  "statsTotal": "Aufgaben gesamt",
+  "statsDone": "Erledigt",
+  "statsOpen": "Offen",
+  "statsOverdue": "Überfällig",
+  "statsDoneRate": "Erledigungsrate",
+  "statsByPriority": "Nach Priorität",
+  "statsPriorityNone": "Keine Priorität",
+  "statsTopProjects": "Top-Projekte",
+  "statsNoData": "Keine Daten verfügbar",
+  "statsError": "Fehler beim Laden der Statistiken"
 }

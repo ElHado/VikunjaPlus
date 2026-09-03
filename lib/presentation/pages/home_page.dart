@@ -15,6 +15,7 @@ import 'package:vikunja_app/presentation/manager/task_page_controller.dart';
 import 'package:vikunja_app/presentation/pages/project/project_list_page.dart';
 import 'package:vikunja_app/presentation/pages/settings_page.dart';
 import 'package:vikunja_app/presentation/pages/task/task_list_page.dart';
+import 'package:vikunja_app/presentation/pages/task/task_stats_page.dart';
 import 'package:vikunja_app/presentation/widgets/task/add_task_dialog.dart';
 
 class HomePage extends ConsumerStatefulWidget {
@@ -31,7 +32,7 @@ class HomePageState extends ConsumerState<HomePage> {
   Widget? drawerItem;
   NotificationHandler? _notificationHandler;
 
-  List<Widget> widgets = [TaskListPage(), ProjectListPage(), SettingsPage()];
+  List<Widget> widgets = [TaskListPage(), ProjectListPage(), TaskStatsPage(), SettingsPage()];
 
   List<NavigationDestination> navbarItems(BuildContext context) => [
     NavigationDestination(
@@ -41,6 +42,10 @@ class HomePageState extends ConsumerState<HomePage> {
     NavigationDestination(
       icon: Icon(Icons.list),
       label: AppLocalizations.of(context).projectsTab,
+    ),
+    NavigationDestination(
+      icon: Icon(Icons.bar_chart),
+      label: AppLocalizations.of(context).statsTab,
     ),
     NavigationDestination(
       icon: Icon(Icons.settings),
