@@ -114,11 +114,13 @@ class _TaskStatsPageState extends ConsumerState<TaskStatsPage> {
 
       String timeFilter = '';
       if (start != null) {
-        timeFilter += 'due_date >= "${start.toIso8601String()}"';
+        final s = start.toIso8601String().split('T')[0];
+        timeFilter += 'due_date >= "$s 00:00:00"';
       }
       if (end != null) {
         if (timeFilter.isNotEmpty) timeFilter += ' && ';
-        timeFilter += 'due_date <= "${end.toIso8601String()}"';
+        final e = end.toIso8601String().split('T')[0];
+        timeFilter += 'due_date <= "$e 23:59:59"';
       }
       // Bei Zeitraum: Datum beachten, sonst alle Tasks
       final baseFilter = timeFilter.isEmpty ? '' : '$timeFilter && ';
@@ -171,12 +173,13 @@ class _TaskStatsPageState extends ConsumerState<TaskStatsPage> {
 
       // Überfällige Tasks (immer aktuell, kein Zeitraum-Filter)
       final now = DateTime.now();
+      final nowStr = now.toIso8601String().split('T')[0];
       List<Task> overdueTasks = [];
       page = 1;
       totalPages = 1;
       while (page <= totalPages) {
         final response = await taskService.getByFilterString(
-          'done=false && due_date < "${now.toIso8601String()}"',
+          'done=false && due_date < "$nowStr 00:00:00"',
           {'filter_include_nulls': ['false'], 'per_page': ['100'], 'page': ['$page']},
         );
         if (!response.isSuccessful) break;
