@@ -4,6 +4,13 @@ All notable changes to the **Vikunja+** project will be documented in this file.
 
 ---
 
+## [0.50.1] - 2026-09-11
+
+### Fixed
+* **Task Analytics Scope:** Fixed monthly timeframe calculation so the "Month" filter includes the full calendar month instead of cutting off at the current date. Open and upcoming tasks for the remainder of the month are now properly displayed.
+
+---
+
 ## [0.5.0] - 2026-09-03
 
 ### Added

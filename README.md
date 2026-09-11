@@ -13,6 +13,7 @@ Vikunja is a feature-rich, self-hostable task management platform. **Vikunja+** 
 
 ### 📊 Task Analytics & Visual Statistics
 * **Dedicated Analytics Tab:** Comprehensive dashboard providing real-time insights into open, completed, and overdue tasks.
+* **Full-Month Analytics Scope:** Monthly filters encompass the entire calendar month to accurately capture open and upcoming tasks beyond the current day.
 * **Time-based Filtering:** Filter task performance and metrics across custom time ranges.
 * **Visual Data Analysis:** Visual breakdown and charts for tracking productivity and workload over time.
 
@@ -50,7 +51,7 @@ Vikunja is a feature-rich, self-hostable task management platform. **Vikunja+** 
 
 ## 🛠 Tech Stack & Dependencies Update
 
-| Component | Upstream (v0.1.8) | Vikunja+ (v0.5.0) |
+| Component | Upstream (v0.1.8) | Vikunja+ (v0.50.1) |
 | :--- | :--- | :--- |
 | **Gradle** | 8.14 | **9.5.0** |
 | **AGP** | 8.12.3 | **9.3.1** |
