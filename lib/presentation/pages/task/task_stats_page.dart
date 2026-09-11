@@ -58,7 +58,7 @@ class TaskStatsPage extends ConsumerStatefulWidget {
 }
 
 class _TaskStatsPageState extends ConsumerState<TaskStatsPage> {
-  StatsPeriod _selectedPeriod = StatsPeriod.all;
+  StatsPeriod _selectedPeriod = StatsPeriod.month;
   DateTime? _customStart;
   DateTime? _customEnd;
   _StatsData? _stats;
@@ -94,10 +94,14 @@ class _TaskStatsPageState extends ConsumerState<TaskStatsPage> {
     final now = DateTime.now();
     switch (_selectedPeriod) {
       case StatsPeriod.today:
+        return DateTime(now.year, now.month, now.day, 23, 59, 59);
       case StatsPeriod.week:
+        final weekday = now.weekday;
+        return DateTime(now.year, now.month, now.day - weekday + 7, 23, 59, 59);
       case StatsPeriod.month:
+        return DateTime(now.year, now.month + 1, 0, 23, 59, 59);
       case StatsPeriod.year:
-        return now;
+        return DateTime(now.year, 12, 31, 23, 59, 59);
       case StatsPeriod.all:
         return null;
       case StatsPeriod.custom:
