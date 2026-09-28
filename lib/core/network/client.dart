@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:cupertino_http/cupertino_http.dart' as cupertino_http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/io_client.dart' as io_client;
 import 'package:logging/logging.dart';
@@ -205,6 +206,9 @@ class Client {
             globalNavigatorKey.currentContext != null) {
           globalNavigatorKey.currentState?.pushNamed("/login");
         }
+        if (response.statusCode == 401) {
+          showSessionExpiredNotification();
+        }
 
         return ErrorResponse<T>(response.statusCode, await getHeaders(), error);
       } on FormatException catch (e, s) {
@@ -323,5 +327,32 @@ class IgnoreCertHttpOverrides extends HttpOverrides {
   HttpClient createHttpClient(SecurityContext? context) {
     return super.createHttpClient(context)
       ..badCertificateCallback = (_, _, _) => ignoreCerts;
+  }
+}
+
+/// Zeigt eine persistente Notification, wenn die Session abgelaufen ist.
+/// Wird sowohl vom Background-Sync als auch vom Haupt-Thread aufgerufen.
+void showSessionExpiredNotification() {
+  try {
+    final plugin = FlutterLocalNotificationsPlugin();
+    final android = AndroidInitializationSettings('vikunja_logo');
+    final settings = InitializationSettings(android: android);
+    plugin.initialize(settings: settings);
+    plugin.show(
+      id: -1,
+      title: 'Vikunja+',
+      body: 'Session expired! Please log in again.',
+      notificationDetails: const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'session_expired', 'Session',
+          channelDescription: 'Session abgelaufen',
+          importance: Importance.high,
+          priority: Priority.high,
+          icon: 'notification_icon',
+        ),
+      ),
+    );
+  } catch (e) {
+    developer.log('Failed to show session expired notification: $e');
   }
 }

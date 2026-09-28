@@ -419,10 +419,16 @@ class NotificationHandler {
         }
       }
       developer.log("notifications scheduled successfully");
-    } else if (taskResponse.isError) {
-      // Bei Auth-Fehler (401): Session-Info-Notification anzeigen
-      final statusCode = taskResponse.toError().statusCode;
-      if (statusCode == 401) {
+    } else {
+      // Background-Sync fehlgeschlagen → Session-Info-Notification
+      bool isAuthError = false;
+      if (taskResponse.isError) {
+        final statusCode = taskResponse.toError().statusCode;
+        if (statusCode == 401 || statusCode == 403) isAuthError = true;
+      }
+      if (!isAuthError && taskResponse.isException) isAuthError = true;
+
+      if (isAuthError) {
         await notificationsPlugin.show(
           id: -1,
           title: _appName,
