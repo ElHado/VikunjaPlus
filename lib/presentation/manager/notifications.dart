@@ -147,6 +147,8 @@ class NotificationHandler {
   final String _reminderFallbackBody;
   final String _testNotificationTitle;
   final String _testNotificationBody;
+  final String _appName;
+  final String _sessionExpiredMsg;
 
   late final AndroidNotificationDetails androidSpecificsDueDate;
   late final AndroidNotificationDetails androidSpecificsReminders;
@@ -165,6 +167,8 @@ class NotificationHandler {
     String reminderFallbackBody = 'Erinnerung',
     String testNotificationTitle = 'Test-Benachrichtigung',
     String testNotificationBody = 'Dies ist eine Test-Benachrichtigung',
+    String appName = 'Vikunja+',
+    String sessionExpiredMsg = 'Session abgelaufen! Bitte neu einloggen.',
   })  : _doneActionLabel = doneActionLabel,
         _snoozeActionLabel = snoozeActionLabel,
         _channelDueName = channelDueName,
@@ -173,7 +177,9 @@ class NotificationHandler {
         _dueFallbackBody = dueFallbackBody,
         _reminderFallbackBody = reminderFallbackBody,
         _testNotificationTitle = testNotificationTitle,
-        _testNotificationBody = testNotificationBody {
+        _testNotificationBody = testNotificationBody,
+        _appName = appName,
+        _sessionExpiredMsg = sessionExpiredMsg {
     androidSpecificsDueDate = AndroidNotificationDetails(
       "Vikunja1",
       _channelDueName,
@@ -369,6 +375,8 @@ class NotificationHandler {
       // bis der User sie selbst bearbeitet oder wegwischt.
       final pending = await notificationsPlugin.pendingNotificationRequests();
       for (final p in pending) {
+        // Session-Info-Notification nicht canceln
+        if (p.id < 0) continue;
         await notificationsPlugin.cancel(id: p.id);
       }
 
@@ -411,6 +419,26 @@ class NotificationHandler {
         }
       }
       developer.log("notifications scheduled successfully");
+    } else if (taskResponse.isError) {
+      // Bei Auth-Fehler (401): Session-Info-Notification anzeigen
+      final statusCode = taskResponse.toError().statusCode;
+      if (statusCode == 401) {
+        await notificationsPlugin.show(
+          id: -1,
+          title: _appName,
+          body: _sessionExpiredMsg,
+          notificationDetails: const NotificationDetails(
+            android: AndroidNotificationDetails(
+              'session_expired', 'Session',
+              channelDescription: 'Session abgelaufen',
+              importance: Importance.high,
+              priority: Priority.high,
+              icon: 'notification_icon',
+            ),
+          ),
+        );
+        developer.log("session expired notification shown");
+      }
     }
   }
 
