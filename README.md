@@ -11,6 +11,14 @@ Vikunja is a feature-rich, self-hostable task management platform. **Vikunja+** 
 
 ## ✨ Key Enhancements & Features
 
+### 🔔 Smart Notifications & Actionable Controls
+* **Session Expiry Alerts:** Displays a system notification prompting re-authentication whenever a background sync job receives a `401 Unauthorized` response due to an expired token or session.
+* **Actionable System Notifications:** Complete tasks or snooze them directly from your system notifications.
+* **Informative Snooze Buttons:** Notification buttons display the configured snooze duration (e.g., "+30m") so you always know what action is being taken.
+* **Server-Synced Snooze:** Snoozing reschedules both local alerts and the remote server task.
+* **Smart Duplication Prevention:** Prevents double alerts when both a reminder and a due date are set (prioritizes the exact reminder time).
+* **Clean Text Body:** Strips HTML formatting from task notes to display crisp, readable notifications.
+
 ### 📊 Task Analytics & Visual Statistics
 * **Dedicated Analytics Tab:** Comprehensive dashboard providing real-time insights into open, completed, and overdue tasks.
 * **Full-Month Analytics Scope:** Monthly filters encompass the entire calendar month to accurately capture open and upcoming tasks beyond the current day.
@@ -24,13 +32,6 @@ Vikunja is a feature-rich, self-hostable task management platform. **Vikunja+** 
 * **Interactive Table View:** View your tasks in a clean tabular format across all projects, featuring full column sorting and instant completion toggles.
 * **Global View Switching:** Easily switch to the Table view project-wide directly from the main screen's top menu (`...`).
 * **Instant Kanban Refresh:** Real-time column updates — tasks instantly appear or disappear from Kanban columns upon status updates.
-
-### 🔔 Smart Notifications & Actionable Controls
-* **Actionable System Notifications:** Complete tasks or snooze them directly from your system notifications.
-* **Informative Snooze Buttons:** Notification buttons display the configured snooze duration (e.g., "+30m") so you always know what action is being taken.
-* **Server-Synced Snooze:** Snoozing reschedules both local alerts and the remote server task.
-* **Smart Duplication Prevention:** Prevents double alerts when both a reminder and a due date are set (prioritizes the exact reminder time).
-* **Clean Text Body:** Strips HTML formatting from task notes to display crisp, readable notifications.
 
 ### ⚡ Modern Toolchain & High-Performance Core
 * **Updated Stack:** Modernized to **Gradle 9.5.0**, **Android Gradle Plugin (AGP) 9.3.1**, and **Kotlin 2.3.20** targeting **SDK 36**.
@@ -51,7 +52,7 @@ Vikunja is a feature-rich, self-hostable task management platform. **Vikunja+** 
 
 ## 🛠 Tech Stack & Dependencies Update
 
-| Component | Upstream (v0.1.8) | Vikunja+ (v0.50.1) |
+| Component | Upstream (v0.1.8) | Vikunja+ (v0.51) |
 | :--- | :--- | :--- |
 | **Gradle** | 8.14 | **9.5.0** |
 | **AGP** | 8.12.3 | **9.3.1** |
@@ -59,6 +60,7 @@ Vikunja is a feature-rich, self-hostable task management platform. **Vikunja+** 
 | **Target SDK** | Default | **36** |
 | **Main Views** | List / Kanban | **List / Kanban / Sortable Table / Task Analytics** |
 | **Global Features** | Basic | **Cross-Project Search & Visual Task Analytics** |
+| **Session Management** | Silent Failure | **Interactive 401 Re-login Notifications** |
 | **Telemetry / Sentry** | Enabled | **Removed** |
 | **Webview / HTML Editor** | Heavy Webview | **Lightweight Plain Text** |
 

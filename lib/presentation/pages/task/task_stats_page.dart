@@ -148,9 +148,15 @@ class _TaskStatsPageState extends ConsumerState<TaskStatsPage> {
       List<Task> filteredTasks = allTasks;
       if (start != null || end != null) {
         filteredTasks = allTasks.where((task) {
-          if (!task.hasDueDate) return start == null; // ohne Datum nur bei "Alles"
-          if (start != null && task.dueDate!.isBefore(start)) return false;
-          if (end != null && task.dueDate!.isAfter(end)) return false;
+          if (!task.hasDueDate) {
+            return start == null; // ohne Datum nur bei "Alles"
+          }
+          if (start != null && task.dueDate!.isBefore(start)) {
+            return false;
+          }
+          if (end != null && task.dueDate!.isAfter(end)) {
+            return false;
+          }
           return true;
         }).toList();
       }
@@ -168,10 +174,15 @@ class _TaskStatsPageState extends ConsumerState<TaskStatsPage> {
 
       for (final t in filteredTasks) {
         final pri = t.priority ?? 0;
-        if (pri == 0) noPri++;
-        else if (pri <= 1) lowPri++;
-        else if (pri <= 2) medPri++;
-        else highPri++;
+        if (pri == 0) {
+          noPri++;
+        } else if (pri <= 1) {
+          lowPri++;
+        } else if (pri <= 2) {
+          medPri++;
+        } else {
+          highPri++;
+        }
 
         if (t.project != null) {
           projCount[t.project!.title] = (projCount[t.project!.title] ?? 0) + 1;
@@ -195,7 +206,9 @@ class _TaskStatsPageState extends ConsumerState<TaskStatsPage> {
         _loading = false;
       });
     } catch (_) {
-      if (mounted) setState(() { _error = true; _loading = false; });
+      if (mounted) {
+        setState(() { _error = true; _loading = false; });
+      }
     }
   }
 

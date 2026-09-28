@@ -168,7 +168,7 @@ class NotificationHandler {
     String testNotificationTitle = 'Test-Benachrichtigung',
     String testNotificationBody = 'Dies ist eine Test-Benachrichtigung',
     String appName = 'Vikunja+',
-    String sessionExpiredMsg = 'Session abgelaufen! Bitte neu einloggen.',
+    String sessionExpiredMsg = 'Session expired! Please log in again.',
   })  : _doneActionLabel = doneActionLabel,
         _snoozeActionLabel = snoozeActionLabel,
         _channelDueName = channelDueName,

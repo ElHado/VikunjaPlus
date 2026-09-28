@@ -4,6 +4,13 @@ All notable changes to the **Vikunja+** project will be documented in this file.
 
 ---
 
+## [0.51.0] - 2026-09-28
+
+### Added
+* **Session Expiry Notification:** Added automatic system notification prompting user re-authentication when a background sync job encounters an HTTP `401 Unauthorized` error due to an expired login session.
+
+---
+
 ## [0.50.1] - 2026-09-11
 
 ### Fixed
