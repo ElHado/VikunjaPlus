@@ -468,6 +468,7 @@ class _TaskListPageState extends ConsumerState<TaskListPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(AppLocalizations.of(context).taskRescheduled)),
       );
+      ref.read(taskPageControllerProvider.notifier).reload();
     }
   }
 }

@@ -243,6 +243,7 @@ class ProjectTaskList extends ConsumerWidget {
       ScaffoldMessenger.of(ref.context).showSnackBar(
         SnackBar(content: Text(AppLocalizations.of(ref.context).taskRescheduled)),
       );
+      // Task im lokalen State aktualisieren für sofortige Anzeige
       ref.read(projectControllerProvider(project).notifier).reload();
     }
   }
