@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:datetime_picker_formfield_new/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:vikunja_app/domain/entities/task.dart';
 import 'package:vikunja_app/l10n/gen/app_localizations.dart';
@@ -45,10 +44,13 @@ class TaskActions extends StatelessWidget {
     onBeforeAction?.call();
     if (onReschedule == null) return;
 
+    // Token in lokaler Zeit für den Picker (Server speichert UTC)
+    final localDue = task.dueDate?.toLocal() ?? DateTime.now();
+
     var selectedDate = await showDialog<DateTime>(
       context: context,
       builder: (_) => DatePickerDialog(
-        initialDate: task.dueDate ?? DateTime.now(),
+        initialDate: localDue,
         firstDate: DateTime(1900),
         lastDate: DateTime(2100),
         initialCalendarMode: DatePickerMode.day,
@@ -61,19 +63,21 @@ class TaskActions extends StatelessWidget {
       context: context,
       builder: (_) =>
           TimePickerDialog(
-            initialTime: TimeOfDay.fromDateTime(task.dueDate ?? DateTime.now()),
+            initialTime: TimeOfDay.fromDateTime(localDue),
           ),
     );
 
     if (selectedTime == null || !context.mounted) return;
 
-    onReschedule?.call(DateTime(
+    // Lokale Zeit → in UTC für Server-API
+    final localNew = DateTime(
       selectedDate.year,
       selectedDate.month,
       selectedDate.day,
       selectedTime.hour,
       selectedTime.minute,
-    ));
+    );
+    onReschedule?.call(localNew.toUtc());
   }
 
   void _handleMenuAction(BuildContext context, _TaskAction action) {
