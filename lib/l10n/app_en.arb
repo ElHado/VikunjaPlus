@@ -242,5 +242,9 @@
   "statsNoData": "No data available",
   "statsError": "Failed to load statistics",
 
-  "noDate": "No date"
+  "noDate": "No date",
+
+  "reschedule": "Reschedule",
+
+  "taskRescheduled": "Task rescheduled"
 }

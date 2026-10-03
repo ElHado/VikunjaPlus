@@ -8,6 +8,7 @@ class ProjectTaskListItem extends StatefulWidget {
   final Task task;
   final Function onTap;
   final Function onEdit;
+  final void Function(DateTime?)? onReschedule;
   final Function(bool value) onCheckedChanged;
 
   const ProjectTaskListItem({
@@ -15,6 +16,7 @@ class ProjectTaskListItem extends StatefulWidget {
     required this.task,
     required this.onTap,
     required this.onEdit,
+    this.onReschedule,
     required this.onCheckedChanged,
   });
 
@@ -60,6 +62,7 @@ class ProjectTaskListItemState extends State<ProjectTaskListItem> {
               TaskActions(
                 task: widget.task,
                 onEdit: () => widget.onEdit(),
+                onReschedule: widget.onReschedule,
                 variant: TaskActionsVariant.menu,
               ),
             ],

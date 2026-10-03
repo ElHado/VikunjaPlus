@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:vikunja_app/core/di/repository_provider.dart';
 import 'package:vikunja_app/core/utils/calculate_item_position.dart';
 import 'package:vikunja_app/domain/entities/project.dart';
 import 'package:vikunja_app/domain/entities/task.dart';
@@ -195,6 +196,7 @@ class ProjectTaskList extends ConsumerWidget {
       task: task,
       onTap: () => _showTaskBottomSheet(ref, task),
       onEdit: () => _onEdit(ref, task),
+      onReschedule: (dueDate) => _onReschedule(ref, task, dueDate),
       onCheckedChanged: (value) async {
         var success = await ref
             .read(projectControllerProvider(project).notifier)
@@ -229,6 +231,18 @@ class ProjectTaskList extends ConsumerWidget {
     );
 
     if (editedTask != null) {
+      ref.read(projectControllerProvider(project).notifier).reload();
+    }
+  }
+
+  void _onReschedule(WidgetRef ref, Task task, DateTime? dueDate) async {
+    if (dueDate == null) return;
+    task.dueDate = dueDate;
+    var response = await ref.read(taskRepositoryProvider).update(task);
+    if (response.isSuccessful) {
+      ScaffoldMessenger.of(ref.context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(ref.context).taskRescheduled)),
+      );
       ref.read(projectControllerProvider(project).notifier).reload();
     }
   }

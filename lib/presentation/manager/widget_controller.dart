@@ -103,6 +103,6 @@ Future<void> updateWidgetTasks(List<Task> tasklist) async {
 Future<void> reRenderWidget() async {
   await HomeWidget.updateWidget(
     name: 'AppWidget',
-    qualifiedAndroidName: 'io.vikunja.app.widget.AppWidgetReciever',
+    qualifiedAndroidName: 'vikunjaplus.app.widget.AppWidgetReciever',
   );
 }

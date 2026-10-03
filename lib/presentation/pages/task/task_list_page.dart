@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:vikunja_app/core/di/network_provider.dart';
+import 'package:vikunja_app/core/di/repository_provider.dart';
 import 'package:vikunja_app/domain/entities/task.dart';
 import 'package:vikunja_app/domain/entities/task_page_model.dart';
 import 'package:vikunja_app/l10n/gen/app_localizations.dart';
@@ -421,6 +422,7 @@ class _TaskListPageState extends ConsumerState<TaskListPage> {
         _showTaskBottomSheet(context, task);
       },
       onEdit: () => _onEdit(context, task),
+      onReschedule: (dueDate) => _onReschedule(context, task, dueDate),
       onCheckedChanged: (value) async {
         var success = await ref
             .read(taskPageControllerProvider.notifier)
@@ -456,5 +458,16 @@ class _TaskListPageState extends ConsumerState<TaskListPage> {
       context,
       MaterialPageRoute(builder: (buildContext) => TaskEditPage(task: task)),
     );
+  }
+
+  void _onReschedule(BuildContext context, Task task, DateTime? dueDate) async {
+    if (dueDate == null) return;
+    task.dueDate = dueDate;
+    var response = await ref.read(taskRepositoryProvider).update(task);
+    if (response.isSuccessful) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context).taskRescheduled)),
+      );
+    }
   }
 }

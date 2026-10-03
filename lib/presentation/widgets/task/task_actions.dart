@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'package:datetime_picker_formfield_new/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:vikunja_app/domain/entities/task.dart';
 import 'package:vikunja_app/l10n/gen/app_localizations.dart';
@@ -5,11 +7,12 @@ import 'package:vikunja_app/presentation/pages/task/task_comments_page.dart';
 
 enum TaskActionsVariant { menu, icons }
 
-enum _TaskAction { comments, edit }
+enum _TaskAction { comments, edit, reschedule }
 
 class TaskActions extends StatelessWidget {
   final Task task;
   final VoidCallback onEdit;
+  final void Function(DateTime?)? onReschedule;
   final TaskActionsVariant variant;
   final VoidCallback? onBeforeAction;
 
@@ -17,6 +20,7 @@ class TaskActions extends StatelessWidget {
     super.key,
     required this.task,
     required this.onEdit,
+    this.onReschedule,
     required this.variant,
     this.onBeforeAction,
   });
@@ -37,6 +41,41 @@ class TaskActions extends StatelessWidget {
     onEdit();
   }
 
+  Future<void> _onReschedule(BuildContext context) async {
+    onBeforeAction?.call();
+    if (onReschedule == null) return;
+
+    var selectedDate = await showDialog<DateTime>(
+      context: context,
+      builder: (_) => DatePickerDialog(
+        initialDate: task.dueDate ?? DateTime.now(),
+        firstDate: DateTime(1900),
+        lastDate: DateTime(2100),
+        initialCalendarMode: DatePickerMode.day,
+      ),
+    );
+
+    if (selectedDate == null || !context.mounted) return;
+
+    var selectedTime = await showDialog<TimeOfDay>(
+      context: context,
+      builder: (_) =>
+          TimePickerDialog(
+            initialTime: TimeOfDay.fromDateTime(task.dueDate ?? DateTime.now()),
+          ),
+    );
+
+    if (selectedTime == null || !context.mounted) return;
+
+    onReschedule?.call(DateTime(
+      selectedDate.year,
+      selectedDate.month,
+      selectedDate.day,
+      selectedTime.hour,
+      selectedTime.minute,
+    ));
+  }
+
   void _handleMenuAction(BuildContext context, _TaskAction action) {
     switch (action) {
       case _TaskAction.comments:
@@ -45,18 +84,27 @@ class TaskActions extends StatelessWidget {
       case _TaskAction.edit:
         _edit();
         break;
+      case _TaskAction.reschedule:
+        unawaited(_onReschedule(context));
+        break;
     }
   }
 
   List<PopupMenuEntry<_TaskAction>> _menuItems(BuildContext context) {
     final localizations = AppLocalizations.of(context);
-    return [
+    final items = <PopupMenuEntry<_TaskAction>>[
       PopupMenuItem(
         value: _TaskAction.comments,
         child: Text(localizations.comments),
       ),
+      if (onReschedule != null)
+        PopupMenuItem(
+          value: _TaskAction.reschedule,
+          child: Text(localizations.reschedule),
+        ),
       PopupMenuItem(value: _TaskAction.edit, child: Text(localizations.edit)),
     ];
+    return items;
   }
 
   @override
