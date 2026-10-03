@@ -261,27 +261,103 @@ class TaskEditPageState extends ConsumerState<TaskEditPage> {
   Widget _buildDueDate() {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 8.0),
-      child: VikunjaDateTimeField(
-        icon: Icon(Icons.access_time),
-        label: AppLocalizations.of(context).dueDateLabel,
-        initialValue: widget.task.dueDate,
-        onChanged: (duedate) {
-          _dueDate = duedate;
-          _checkChanged();
+      child: ListTile(
+        leading: Icon(Icons.access_time),
+        title: Text(AppLocalizations.of(context).dueDateLabel),
+        subtitle: Text(_formatDate(_dueDate)),
+        onTap: () async {
+          var selectedDate = await showDialog<DateTime>(
+            context: context,
+            builder: (_) => DatePickerDialog(
+              initialDate: _dueDate ?? DateTime.now(),
+              firstDate: DateTime(1900),
+              lastDate: DateTime(2100),
+              initialCalendarMode: DatePickerMode.day,
+            ),
+          );
+
+          if (selectedDate == null || !mounted) return;
+
+          var selectedTime = await showDialog<TimeOfDay>(
+            context: context,
+            builder: (_) => TimePickerDialog(
+              initialTime:
+                  TimeOfDay.fromDateTime(_dueDate ?? DateTime.now()),
+            ),
+          );
+
+          if (selectedTime == null || !mounted) return;
+
+          final newValue = DateTime(
+            selectedDate.year,
+            selectedDate.month,
+            selectedDate.day,
+            selectedTime.hour,
+            selectedTime.minute,
+          );
+
+          setState(() {
+            _dueDate = newValue;
+            _checkChanged();
+          });
         },
       ),
     );
   }
 
+  String _formatDate(DateTime? dt) {
+    if (dt == null || dt.year <= 1) {
+      return AppLocalizations.of(context).noDate;
+    }
+    final d = dt.day.toString().padLeft(2, '0');
+    final m = dt.month.toString().padLeft(2, '0');
+    final h = dt.hour.toString().padLeft(2, '0');
+    final min = dt.minute.toString().padLeft(2, '0');
+    return '$d.$m.${dt.year} $h:$min';
+  }
+
   Widget _buildStartDate() {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 8.0),
-      child: VikunjaDateTimeField(
-        label: AppLocalizations.of(context).startDateLabel,
-        initialValue: widget.task.startDate,
-        onChanged: (startDate) {
-          _startDate = startDate;
-          _checkChanged();
+      child: ListTile(
+        leading: Icon(Icons.date_range),
+        title: Text(AppLocalizations.of(context).startDateLabel),
+        subtitle: Text(_formatDate(_startDate)),
+        onTap: () async {
+          var selectedDate = await showDialog<DateTime>(
+            context: context,
+            builder: (_) => DatePickerDialog(
+              initialDate: _startDate ?? DateTime.now(),
+              firstDate: DateTime(1900),
+              lastDate: DateTime(2100),
+              initialCalendarMode: DatePickerMode.day,
+            ),
+          );
+
+          if (selectedDate == null || !mounted) return;
+
+          var selectedTime = await showDialog<TimeOfDay>(
+            context: context,
+            builder: (_) => TimePickerDialog(
+              initialTime:
+                  TimeOfDay.fromDateTime(_startDate ?? DateTime.now()),
+            ),
+          );
+
+          if (selectedTime == null || !mounted) return;
+
+          final newValue = DateTime(
+            selectedDate.year,
+            selectedDate.month,
+            selectedDate.day,
+            selectedTime.hour,
+            selectedTime.minute,
+          );
+
+          setState(() {
+            _startDate = newValue;
+            _checkChanged();
+          });
         },
       ),
     );
@@ -290,12 +366,45 @@ class TaskEditPageState extends ConsumerState<TaskEditPage> {
   Widget _buildEndDate() {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 8.0),
-      child: VikunjaDateTimeField(
-        label: AppLocalizations.of(context).endDateLabel,
-        initialValue: widget.task.endDate,
-        onChanged: (endDate) {
-          _endDate = endDate;
-          _checkChanged();
+      child: ListTile(
+        leading: Icon(Icons.event),
+        title: Text(AppLocalizations.of(context).endDateLabel),
+        subtitle: Text(_formatDate(_endDate)),
+        onTap: () async {
+          var selectedDate = await showDialog<DateTime>(
+            context: context,
+            builder: (_) => DatePickerDialog(
+              initialDate: _endDate ?? DateTime.now(),
+              firstDate: DateTime(1900),
+              lastDate: DateTime(2100),
+              initialCalendarMode: DatePickerMode.day,
+            ),
+          );
+
+          if (selectedDate == null || !mounted) return;
+
+          var selectedTime = await showDialog<TimeOfDay>(
+            context: context,
+            builder: (_) => TimePickerDialog(
+              initialTime:
+                  TimeOfDay.fromDateTime(_endDate ?? DateTime.now()),
+            ),
+          );
+
+          if (selectedTime == null || !mounted) return;
+
+          final newValue = DateTime(
+            selectedDate.year,
+            selectedDate.month,
+            selectedDate.day,
+            selectedTime.hour,
+            selectedTime.minute,
+          );
+
+          setState(() {
+            _endDate = newValue;
+            _checkChanged();
+          });
         },
       ),
     );
