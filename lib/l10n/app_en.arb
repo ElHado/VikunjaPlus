@@ -240,5 +240,7 @@
   "statsPriorityNone": "No Priority",
   "statsTopProjects": "Top Projects",
   "statsNoData": "No data available",
-  "statsError": "Failed to load statistics"
+  "statsError": "Failed to load statistics",
+
+  "noDate": "No date"
 }

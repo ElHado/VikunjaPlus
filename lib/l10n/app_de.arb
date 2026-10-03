@@ -240,5 +240,7 @@
   "statsPriorityNone": "Keine Priorität",
   "statsTopProjects": "Top-Projekte",
   "statsNoData": "Keine Daten verfügbar",
-  "statsError": "Fehler beim Laden der Statistiken"
+  "statsError": "Fehler beim Laden der Statistiken",
+
+  "noDate": "Kein Datum"
 }
