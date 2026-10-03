@@ -4,6 +4,18 @@ All notable changes to the **Vikunja+** project will be documented in this file.
 
 ---
 
+## [0.52.0] - 2026-10-03
+
+### Added
+* **Task Overflow Menu Relocation:** Added option to move tasks directly from the task overflow menu (`...`).
+* **Edit View Date/Time Picker:** Integrated dedicated date/time picker directly into the full task edit screen.
+
+### Fixed
+* **Widget App Labeling:** Updated home screen widget to reflect the correct Vikunja+ branding instead of legacy app naming.
+* **Timezone Handling:** Corrected server UTC timestamp parsing and local timezone conversion across dates and deadlines.
+
+---
+
 ## [0.51.0] - 2026-09-28
 
 ### Added
