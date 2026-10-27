@@ -239,6 +239,39 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
                   ],
                 ),
               ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.highPriorityChannel,
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: 4),
+                      child: Text(
+                        l10n.highPriorityChannelHelper,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context)
+                              .textTheme
+                              .bodySmall
+                              ?.color
+                              ?.withValues(alpha: 0.5),
+                        ),
+                      ),
+                    ),
+                    Switch(
+                      value: settings.highPriorityChannel,
+                      onChanged: (v) {
+                        ref
+                            .read(settingsControllerProvider.notifier)
+                            .setHighPriorityChannel(v);
+                      },
+                    ),
+                  ],
+                ),
+              ),
               Divider(),
               TextButton(
                 onPressed: () async {

@@ -11,6 +11,8 @@ class SettingsPageState {
   int refreshInterval;
   int snoozeDuration;
 
+  bool highPriorityChannel;
+
   FlutterThemeMode themeMode;
   bool dynamicColors;
 
@@ -20,6 +22,7 @@ class SettingsPageState {
     this.ignoreCertificates,
     this.refreshInterval,
     this.snoozeDuration,
+    this.highPriorityChannel,
     this.themeMode,
     this.dynamicColors,
   );

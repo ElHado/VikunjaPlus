@@ -246,5 +246,8 @@
 
   "reschedule": "Verschieben",
 
-  "taskRescheduled": "Aufgabe verschoben"
+  "taskRescheduled": "Aufgabe verschoben",
+
+  "highPriorityChannel": "Prio-1-Benachrichtigungen hervorheben",
+  "highPriorityChannelHelper": "Aufgaben mit Priorität 4-5 bekommen einen eigenen Kanal und erscheinen als Banner auf dem Sperrbildschirm"
 }

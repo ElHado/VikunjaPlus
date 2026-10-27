@@ -65,7 +65,11 @@ Future<bool> updateTasks() async {
 
   await updateWidget();
 
-  NotificationHandler notificationHandler = NotificationHandler();
+  var urgentMode = await datasource.getHighPriorityChannel();
+
+  NotificationHandler notificationHandler = NotificationHandler(
+    urgentMode: urgentMode,
+  );
   await notificationHandler.initNotifications();
   await notificationHandler.scheduleDueNotifications(taskService);
 

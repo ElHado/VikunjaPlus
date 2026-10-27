@@ -40,6 +40,9 @@ abstract class SettingsRepository {
 
   Future<String?> getRefreshToken();
 
+  Future<bool> getHighPriorityChannel();
+  Future<void> setHighPriorityChannel(bool value);
+
   Future<void> saveServer(String? server);
 
   Future<String?> getServer();

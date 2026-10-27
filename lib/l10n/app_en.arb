@@ -246,5 +246,8 @@
 
   "reschedule": "Reschedule",
 
-  "taskRescheduled": "Task rescheduled"
+  "taskRescheduled": "Task rescheduled",
+
+  "highPriorityChannel": "Highlight priority tasks",
+  "highPriorityChannelHelper": "Priority 4-5 tasks get their own notification channel and appear as banners on the lock screen"
 }

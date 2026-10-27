@@ -149,12 +149,15 @@ class NotificationHandler {
   final String _testNotificationBody;
   final String _appName;
   final String _sessionExpiredMsg;
+  final bool _urgentMode;
 
   late final AndroidNotificationDetails androidSpecificsDueDate;
   late final AndroidNotificationDetails androidSpecificsReminders;
+  late final AndroidNotificationDetails androidSpecificsUrgent;
   late final DarwinNotificationDetails iOSSpecifics;
   late final NotificationDetails platformChannelSpecificsDueDate;
   late final NotificationDetails platformChannelSpecificsReminders;
+  late final NotificationDetails platformChannelSpecificsUrgent;
 
   NotificationHandler({
     String doneActionLabel = 'Erledigt',
@@ -169,6 +172,7 @@ class NotificationHandler {
     String testNotificationBody = 'Dies ist eine Test-Benachrichtigung',
     String appName = 'Vikunja+',
     String sessionExpiredMsg = 'Session expired! Please log in again.',
+    bool urgentMode = false,
   })  : _doneActionLabel = doneActionLabel,
         _snoozeActionLabel = snoozeActionLabel,
         _channelDueName = channelDueName,
@@ -179,7 +183,8 @@ class NotificationHandler {
         _testNotificationTitle = testNotificationTitle,
         _testNotificationBody = testNotificationBody,
         _appName = appName,
-        _sessionExpiredMsg = sessionExpiredMsg {
+        _sessionExpiredMsg = sessionExpiredMsg,
+        _urgentMode = urgentMode {
     androidSpecificsDueDate = AndroidNotificationDetails(
       "Vikunja1",
       _channelDueName,
@@ -202,6 +207,17 @@ class NotificationHandler {
         AndroidNotificationAction(_notificationActionSnooze, _snoozeActionLabel),
       ],
     );
+    androidSpecificsUrgent = AndroidNotificationDetails(
+      "vikunja_urgent",
+      'Benachrichtigungen (Prio)',
+      channelDescription: 'Hochpriore Aufgaben-Benachrichtigungen',
+      icon: 'vikunja_notification_logo',
+      importance: Importance.high,
+      actions: <AndroidNotificationAction>[
+        AndroidNotificationAction(_notificationActionDone, _doneActionLabel),
+        AndroidNotificationAction(_notificationActionSnooze, _snoozeActionLabel),
+      ],
+    );
     iOSSpecifics = DarwinNotificationDetails(
       categoryIdentifier: 'doneCategory',
     );
@@ -211,6 +227,10 @@ class NotificationHandler {
     );
     platformChannelSpecificsReminders = NotificationDetails(
       android: androidSpecificsReminders,
+      iOS: iOSSpecifics,
+    );
+    platformChannelSpecificsUrgent = NotificationDetails(
+      android: androidSpecificsUrgent,
       iOS: iOSSpecifics,
     );
   }
@@ -386,6 +406,14 @@ class NotificationHandler {
 
       for (final task in taskResponse.toSuccess().body) {
         if (task.done) continue;
+        final isHighPrio = _urgentMode && (task.priority ?? 0) >= 4;
+        final chReminder = isHighPrio
+            ? platformChannelSpecificsUrgent
+            : detailsReminder;
+        final chDueDate = isHighPrio
+            ? platformChannelSpecificsUrgent
+            : detailsDueDate;
+
         for (final reminder in task.reminderDates) {
           // Title = Task-Name, Body = Beschreibung (oder Fallback)
           final reminderBody = (task.description.isNotEmpty)
@@ -398,7 +426,7 @@ class NotificationHandler {
             notificationsPlugin,
             reminder.reminder,
             await FlutterTimezone.getLocalTimezone(),
-            detailsReminder,
+            chReminder,
           );
         }
         // Nur Due-Notification schedulen, wenn keine Erinnerungen gesetzt sind
@@ -414,7 +442,7 @@ class NotificationHandler {
             notificationsPlugin,
             task.dueDate!,
             await FlutterTimezone.getLocalTimezone(),
-            detailsDueDate,
+            chDueDate,
           );
         }
       }
@@ -438,7 +466,6 @@ class NotificationHandler {
               'session_expired', 'Session',
               channelDescription: 'Session abgelaufen',
               importance: Importance.high,
-              priority: Priority.high,
               icon: 'notification_icon',
             ),
           ),

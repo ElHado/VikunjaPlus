@@ -136,4 +136,14 @@ class SettingsRepositoryImpl implements SettingsRepository {
   Future<void> setSnoozeDuration(int minutes) {
     return _datasource.setSnoozeDuration(minutes);
   }
+
+  @override
+  Future<bool> getHighPriorityChannel() {
+    return _datasource.getHighPriorityChannel();
+  }
+
+  @override
+  Future<void> setHighPriorityChannel(bool value) {
+    return _datasource.setHighPriorityChannel(value);
+  }
 }

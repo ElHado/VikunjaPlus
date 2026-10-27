@@ -164,4 +164,16 @@ class SettingsDatasource {
       value: minutes.toString(),
     );
   }
+
+  Future<bool> getHighPriorityChannel() async {
+    var value = await _storage.read(key: "high_priority_channel");
+    return value == "1";
+  }
+
+  Future<void> setHighPriorityChannel(bool value) {
+    return _storage.write(
+      key: "high_priority_channel",
+      value: value ? "1" : "0",
+    );
+  }
 }

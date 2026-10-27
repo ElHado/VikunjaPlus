@@ -38,6 +38,10 @@ class SettingsController extends _$SettingsController {
         .read(settingsRepositoryProvider)
         .getSnoozeDuration();
 
+    var highPriorityChannel = await ref
+        .read(settingsRepositoryProvider)
+        .getHighPriorityChannel();
+
     final user = ref.read(currentUserProvider)!;
     final projectsResponse = await ref.read(projectRepositoryProvider).getAll();
 
@@ -51,9 +55,15 @@ class SettingsController extends _$SettingsController {
       ignoreCertificates,
       refreshInterval,
       snoozeDuration,
+      highPriorityChannel,
       themeMode,
       dynamicColor,
     );
+  }
+
+  Future<void> setHighPriorityChannel(bool value) async {
+    ref.read(settingsRepositoryProvider).setHighPriorityChannel(value);
+    state = AsyncData(await getAll());
   }
 
   Future<void> setThemeMode(FlutterThemeMode mode) async {

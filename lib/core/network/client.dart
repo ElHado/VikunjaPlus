@@ -347,7 +347,6 @@ void showSessionExpiredNotification() {
           'session_expired', 'Session',
           channelDescription: 'Session abgelaufen',
           importance: Importance.high,
-          priority: Priority.high,
           icon: 'notification_icon',
         ),
       ),
