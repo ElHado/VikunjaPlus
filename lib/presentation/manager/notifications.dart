@@ -363,7 +363,7 @@ class NotificationHandler {
       final urgentDetails = NotificationDetails(android: androidDetails, iOS: iOSSpecifics);
       notificationsPlugin.show(
         id: Random().nextInt(10000000),
-        title: 'Prio 1: $_testNotificationTitle',
+        title: '🔴 $_testNotificationTitle',
         body: 'Prio-1-Channel: $_testNotificationBody',
         notificationDetails: urgentDetails,
       );
@@ -415,35 +415,13 @@ class NotificationHandler {
     if (taskResponse.isSuccessful) {
       final tasks = taskResponse.toSuccess().body;
 
-      // 1) IDs der aktuell pending Notifications merken
-      final pendingIds = <int>{};
+      // Geplante (pending) Notifications canceln
       for (final p in await notificationsPlugin.pendingNotificationRequests()) {
         if (p.id < 0) continue;
-        pendingIds.add(p.id);
         await notificationsPlugin.cancel(id: p.id);
       }
 
-      // 2) IDs die noch in pending waren, aber nicht mehr in der API sind,
-      //    wurden erledigt/gelöscht/verschoben → aus dem Shade entfernen
-      final activeIds = tasks.map((t) => t.id).toSet();
-      for (final pid in pendingIds) {
-        if (!activeIds.contains(pid)) {
-          await notificationsPlugin.cancel(id: pid);
-        }
-      }
-
-      // 2b) Zusätzlich: erledigte Tasks vom Server holen und aus Shade löschen
-      final doneResponse = await taskService.getByFilterString(
-        "done=true",
-        {'filter_include_nulls': ['false'], 'per_page': ['100']},
-      );
-      if (doneResponse.isSuccessful) {
-        for (final doneTask in doneResponse.toSuccess().body) {
-          await notificationsPlugin.cancel(id: doneTask.id);
-        }
-      }
-
-      // 3) Neue Notifications schedulen (nur offene Tasks)
+      // Neue Notifications schedulen (nur offene Tasks)
       final detailsReminder = await _buildDetailsWithSnooze(false);
       final detailsDueDate = await _buildDetailsWithSnooze(true);
 
@@ -456,6 +434,7 @@ class NotificationHandler {
         final chDueDate = isHighPrio
             ? platformChannelSpecificsUrgent
             : detailsDueDate;
+        final notiTitle = isHighPrio ? '🔴 ${task.title}' : task.title;
 
         for (final reminder in task.reminderDates) {
           // Title = Task-Name, Body = Beschreibung (oder Fallback)
@@ -464,7 +443,7 @@ class NotificationHandler {
               : _reminderFallbackBody;
           await scheduleNotification(
             (reminder.reminder.millisecondsSinceEpoch / 1000).floor(),
-            task.title,
+            notiTitle,
             reminderBody,
             notificationsPlugin,
             reminder.reminder,
@@ -480,7 +459,7 @@ class NotificationHandler {
               : _dueFallbackBody;
           await scheduleNotification(
             task.id,
-            task.title,
+            notiTitle,
             dueBody,
             notificationsPlugin,
             task.dueDate!,

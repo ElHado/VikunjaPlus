@@ -4,6 +4,16 @@ All notable changes to the **Vikunja+** project will be documented in this file.
 
 ---
 
+## [0.55.0] - 2026-10-28
+
+### Added
+* **High-Priority Notification Channel:** Added optional high-priority notification channel in settings to ensure critical task alerts are not missed.
+* **Foreground Auto-Refresh:** Task lists now automatically sync and refresh whenever the app is opened or brought to the foreground.
+* **Analytics Timeframe Persistence:** The last selected time period in Task Analytics is now automatically saved and remembered across sessions.
+* **"Yesterday" Analytics Filter:** Added a dedicated "Yesterday" option to the Task Analytics timeframe filters.
+
+---
+
 ## [0.52.0] - 2026-10-03
 
 ### Added

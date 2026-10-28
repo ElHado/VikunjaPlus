@@ -12,6 +12,7 @@ Vikunja is a feature-rich, self-hostable task management platform. **Vikunja+** 
 ## ✨ Key Enhancements & Features
 
 ### 🔔 Smart Notifications & Actionable Controls
+* **High-Priority Notification Channel:** Option in Settings to send high-priority notifications to a dedicated notification channel to prevent missed alerts.
 * **Session Expiry Alerts:** Displays a system notification prompting re-authentication whenever a background sync job receives a `401 Unauthorized` response due to an expired token or session.
 * **Actionable System Notifications:** Complete tasks or snooze them directly from your system notifications.
 * **Informative Snooze Buttons:** Notification buttons display the configured snooze duration (e.g., "+30m") so you always know what action is being taken.
@@ -21,17 +22,16 @@ Vikunja is a feature-rich, self-hostable task management platform. **Vikunja+** 
 
 ### 📊 Task Analytics & Visual Statistics
 * **Dedicated Analytics Tab:** Comprehensive dashboard providing real-time insights into open, completed, and overdue tasks.
+* **Flexible Timeframe Filters:** Filter task performance and metrics across custom time ranges, including a dedicated "Yesterday" filter.
+* **Persistent Filter Preferences:** Automatically remembers and restores your last selected analytics timeframe filter.
 * **Full-Month Analytics Scope:** Monthly filters encompass the entire calendar month to accurately capture open and upcoming tasks beyond the current day.
-* **Time-based Filtering:** Filter task performance and metrics across custom time ranges.
 * **Visual Data Analysis:** Visual breakdown and charts for tracking productivity and workload over time.
 
-### 🔍 Cross-Project Search
+### 🔄 Auto-Sync & Real-Time Views
+* **Instant Foreground Auto-Refresh:** Automatically fetches and updates task lists as soon as the app is opened or brought to the foreground.
 * **Global Task Search:** Search for tasks across all your projects simultaneously, with full support for filtering both active and completed tasks.
-
-### 📋 Flexible Task Views & Management
 * **Task Relocation Menu:** Move tasks to different projects directly from the task overflow menu (`...`).
 * **Interactive Table View:** View your tasks in a clean tabular format across all projects, featuring full column sorting and instant completion toggles.
-* **Global View Switching:** Easily switch to the Table view project-wide directly from the main screen's top menu (`...`).
 * **Instant Kanban Refresh:** Real-time column updates — tasks instantly appear or disappear from Kanban columns upon status updates.
 
 ### 📝 Streamlined Task Creation & Editing UX
@@ -55,7 +55,7 @@ Vikunja is a feature-rich, self-hostable task management platform. **Vikunja+** 
 
 ## 🛠 Tech Stack & Dependencies Update
 
-| Component | Upstream (v0.1.8) | Vikunja+ (v0.52) |
+| Component | Upstream (v0.1.8) | Vikunja+ (v0.55) |
 | :--- | :--- | :--- |
 | **Gradle** | 8.14 | **9.5.0** |
 | **AGP** | 8.12.3 | **9.3.1** |
@@ -63,7 +63,8 @@ Vikunja is a feature-rich, self-hostable task management platform. **Vikunja+** 
 | **Target SDK** | Default | **36** |
 | **Main Views** | List / Kanban | **List / Kanban / Sortable Table / Task Analytics** |
 | **Global Features** | Basic | **Cross-Project Search & Visual Task Analytics** |
-| **Session Management** | Silent Failure | **Interactive 401 Re-login Notifications** |
+| **Notification Management** | Basic Local Alerts | **High-Priority Channel Option** |
+| **Foreground Sync** | Manual | **Automatic On-App-Open Sync** |
 | **Telemetry / Sentry** | Enabled | **Removed** |
 | **Webview / HTML Editor** | Heavy Webview | **Lightweight Plain Text** |
 
