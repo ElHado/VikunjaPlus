@@ -338,13 +338,36 @@ class NotificationHandler {
   }
 
   void sendTestNotification() async {
-    final details = await _buildDetailsWithSnooze(false);
+    // Normale Test-Benachrichtigung
+    var details = await _buildDetailsWithSnooze(false);
     notificationsPlugin.show(
       id: Random().nextInt(10000000),
       title: _testNotificationTitle,
       body: _testNotificationBody,
       notificationDetails: details,
     );
+
+    // Prio-1-Test-Benachrichtigung (wenn Modus aktiv)
+    if (_urgentMode) {
+      final androidDetails = AndroidNotificationDetails(
+        "vikunja_urgent",
+        'Benachrichtigungen (Prio)',
+        channelDescription: 'Hochpriore Aufgaben-Benachrichtigungen',
+        icon: 'vikunja_notification_logo',
+        importance: Importance.high,
+        actions: <AndroidNotificationAction>[
+          AndroidNotificationAction(_notificationActionDone, _doneActionLabel),
+          AndroidNotificationAction(_notificationActionSnooze, _snoozeActionLabel),
+        ],
+      );
+      final urgentDetails = NotificationDetails(android: androidDetails, iOS: iOSSpecifics);
+      notificationsPlugin.show(
+        id: Random().nextInt(10000000),
+        title: 'Prio 1: $_testNotificationTitle',
+        body: 'Prio-1-Channel: $_testNotificationBody',
+        notificationDetails: urgentDetails,
+      );
+    }
   }
 
   void requestIOSPermissions() {

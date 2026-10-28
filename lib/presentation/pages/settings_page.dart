@@ -244,13 +244,12 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      l10n.highPriorityChannel,
-                      style: Theme.of(context).textTheme.titleSmall,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(vertical: 4),
-                      child: Text(
+                    ListTile(
+                      title: Text(
+                        l10n.highPriorityChannel,
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                      subtitle: Text(
                         l10n.highPriorityChannelHelper,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: Theme.of(context)
@@ -260,14 +259,14 @@ class SettingsPageState extends ConsumerState<SettingsPage> {
                               ?.withValues(alpha: 0.5),
                         ),
                       ),
-                    ),
-                    Switch(
-                      value: settings.highPriorityChannel,
-                      onChanged: (v) {
-                        ref
-                            .read(settingsControllerProvider.notifier)
-                            .setHighPriorityChannel(v);
-                      },
+                      trailing: Switch(
+                        value: settings.highPriorityChannel,
+                        onChanged: (v) {
+                          ref
+                              .read(settingsControllerProvider.notifier)
+                              .setHighPriorityChannel(v);
+                        },
+                      ),
                     ),
                   ],
                 ),
