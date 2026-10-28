@@ -413,21 +413,41 @@ class NotificationHandler {
     );
 
     if (taskResponse.isSuccessful) {
-      // Nur noch geplante (pending) Notifications canceln, nicht alle.
-      // Bereits angezeigte Benachrichtigungen bleiben im Shade erhalten,
-      // bis der User sie selbst bearbeitet oder wegwischt.
-      final pending = await notificationsPlugin.pendingNotificationRequests();
-      for (final p in pending) {
-        // Session-Info-Notification nicht canceln
+      final tasks = taskResponse.toSuccess().body;
+
+      // 1) IDs der aktuell pending Notifications merken
+      final pendingIds = <int>{};
+      for (final p in await notificationsPlugin.pendingNotificationRequests()) {
         if (p.id < 0) continue;
+        pendingIds.add(p.id);
         await notificationsPlugin.cancel(id: p.id);
       }
 
-      // Dynamische Details mit aktuellem Snooze-Label
+      // 2) IDs die noch in pending waren, aber nicht mehr in der API sind,
+      //    wurden erledigt/gelöscht/verschoben → aus dem Shade entfernen
+      final activeIds = tasks.map((t) => t.id).toSet();
+      for (final pid in pendingIds) {
+        if (!activeIds.contains(pid)) {
+          await notificationsPlugin.cancel(id: pid);
+        }
+      }
+
+      // 2b) Zusätzlich: erledigte Tasks vom Server holen und aus Shade löschen
+      final doneResponse = await taskService.getByFilterString(
+        "done=true",
+        {'filter_include_nulls': ['false'], 'per_page': ['100']},
+      );
+      if (doneResponse.isSuccessful) {
+        for (final doneTask in doneResponse.toSuccess().body) {
+          await notificationsPlugin.cancel(id: doneTask.id);
+        }
+      }
+
+      // 3) Neue Notifications schedulen (nur offene Tasks)
       final detailsReminder = await _buildDetailsWithSnooze(false);
       final detailsDueDate = await _buildDetailsWithSnooze(true);
 
-      for (final task in taskResponse.toSuccess().body) {
+      for (final task in tasks) {
         if (task.done) continue;
         final isHighPrio = _urgentMode && (task.priority ?? 0) >= 4;
         final chReminder = isHighPrio

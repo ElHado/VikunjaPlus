@@ -196,13 +196,22 @@ class HomePageState extends ConsumerState<HomePage> {
   Future<void> initNotifications() async {
     var notifGranted = await Permission.notification.isGranted;
     if (notifGranted) {
-      NotificationHandler notificationHandler = NotificationHandler();
+      var urgentMode = await ref
+          .read(settingsRepositoryProvider)
+          .getHighPriorityChannel();
+      NotificationHandler notificationHandler = NotificationHandler(
+        urgentMode: urgentMode,
+      );
       await notificationHandler.initNotifications();
       notificationHandler.addListener(onNotificationDone);
 
       ref.read(notificationProvider.notifier).set(notificationHandler);
       _notificationHandler = notificationHandler;
     }
+
+    // App-Öffnen: frische Daten vom Server laden (auskommentiert, blockiert
+    // notificationProvider wenn Provider noch nicht bereit)
+    // ref.read(taskPageControllerProvider.notifier).reload();
   }
 
   void onNotificationDone() {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vikunja_app/core/di/repository_provider.dart';
 import 'package:vikunja_app/domain/entities/task.dart';
@@ -7,6 +8,7 @@ import 'package:vikunja_app/presentation/widgets/empty_view.dart';
 
 enum StatsPeriod {
   today,
+  yesterday,
   week,
   month,
   year,
@@ -16,6 +18,7 @@ enum StatsPeriod {
   String label(AppLocalizations l10n) {
     switch (this) {
       case StatsPeriod.today: return l10n.statsToday;
+      case StatsPeriod.yesterday: return l10n.statsYesterday;
       case StatsPeriod.week: return l10n.statsWeek;
       case StatsPeriod.month: return l10n.statsMonth;
       case StatsPeriod.year: return l10n.statsYear;
@@ -68,7 +71,35 @@ class _TaskStatsPageState extends ConsumerState<TaskStatsPage> {
   @override
   void initState() {
     super.initState();
+    _loadSavedPeriod();
     _loadStats();
+  }
+
+  Future<void> _loadSavedPeriod() async {
+    try {
+      final storage = FlutterSecureStorage();
+      final saved = await storage.read(key: 'stats_selected_period');
+      if (saved != null && saved.isNotEmpty) {
+        for (final p in StatsPeriod.values) {
+          if (p.name == saved) {
+            _selectedPeriod = p;
+            break;
+          }
+        }
+      }
+    } catch (_) {
+      // Standard (Dieser Monat) bei Fehler
+    }
+  }
+
+  Future<void> _savePeriod() async {
+    try {
+      final storage = FlutterSecureStorage();
+      await storage.write(
+        key: 'stats_selected_period',
+        value: _selectedPeriod.name,
+      );
+    } catch (_) {}
   }
 
   DateTime? get _periodStart {
@@ -76,6 +107,8 @@ class _TaskStatsPageState extends ConsumerState<TaskStatsPage> {
     switch (_selectedPeriod) {
       case StatsPeriod.today:
         return DateTime(now.year, now.month, now.day);
+      case StatsPeriod.yesterday:
+        return DateTime(now.year, now.month, now.day - 1);
       case StatsPeriod.week:
         final weekday = now.weekday;
         return DateTime(now.year, now.month, now.day - weekday + 1);
@@ -95,6 +128,8 @@ class _TaskStatsPageState extends ConsumerState<TaskStatsPage> {
     switch (_selectedPeriod) {
       case StatsPeriod.today:
         return DateTime(now.year, now.month, now.day, 23, 59, 59);
+      case StatsPeriod.yesterday:
+        return DateTime(now.year, now.month, now.day - 1, 23, 59, 59);
       case StatsPeriod.week:
         final weekday = now.weekday;
         return DateTime(now.year, now.month, now.day - weekday + 7, 23, 59, 59);
@@ -228,6 +263,7 @@ class _TaskStatsPageState extends ConsumerState<TaskStatsPage> {
                 _showDateRangePicker();
               } else {
                 setState(() => _selectedPeriod = period);
+                _savePeriod();
                 _loadStats();
               }
             },
