@@ -67,6 +67,8 @@ class _TaskStatsPageState extends ConsumerState<TaskStatsPage> {
   _StatsData? _stats;
   bool _loading = false;
   bool _error = false;
+  // Tägliche Erledigungszahlen für den Heatmap
+  Map<int, int> _dailyCounts = {};
 
   @override
   void initState() {
@@ -199,6 +201,18 @@ class _TaskStatsPageState extends ConsumerState<TaskStatsPage> {
       // Erledigte Tasks (in-memory gefiltert)
       final doneTasks = filteredTasks.where((t) => t.done).toList();
 
+      // Tägliche Erledigungszahlen für Heatmap (letzte 365 Tage)
+      final dailyCounts = <int, int>{};
+      for (final t in doneTasks) {
+        final day = t.doneAt ?? t.dueDate;
+        if (day == null) continue;
+        final diff = DateTime.now().difference(day).inDays;
+        if (diff >= 0 && diff < 365) {
+          final key = day.millisecondsSinceEpoch ~/ Duration.millisecondsPerDay;
+          dailyCounts[key] = (dailyCounts[key] ?? 0) + 1;
+        }
+      }
+
       // Überfällige Tasks (in-memory: done=false + due_date < now)
       final now = DateTime.now();
       final overdueTasks = allTasks.where((t) => !t.done && t.hasDueDate && t.dueDate!.isBefore(now)).toList();
@@ -238,6 +252,7 @@ class _TaskStatsPageState extends ConsumerState<TaskStatsPage> {
           highPriority: highPri,
           tasksByProject: Map.fromEntries(sortedProjects.take(5)),
         );
+        _dailyCounts = dailyCounts;
         _loading = false;
       });
     } catch (_) {
@@ -397,6 +412,12 @@ class _TaskStatsPageState extends ConsumerState<TaskStatsPage> {
               theme, e.key, e.value, stats.total,
             )),
           ],
+
+          // GitHub-Gras (letzte 365 Tage)
+          const SizedBox(height: 24),
+          Text(l10n.statsHeatmap, style: theme.textTheme.titleMedium),
+          const SizedBox(height: 8),
+          _buildHeatmap(context),
         ],
       ),
     );
@@ -465,6 +486,82 @@ class _TaskStatsPageState extends ConsumerState<TaskStatsPage> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildHeatmap(BuildContext context) {
+    if (_dailyCounts.isEmpty) return Text(AppLocalizations.of(context).statsNoData);
+
+    final l10n = AppLocalizations.of(context);
+
+    final now = DateTime.now();
+    final endDate = DateTime(now.year, now.month, now.day);
+    final startDate = endDate.subtract(Duration(days: 363));
+
+    // Maximale Tagesanzahl für Farbskalierung
+    int maxCount = 1;
+    for (final c in _dailyCounts.values) {
+      if (c > maxCount) maxCount = c;
+    }
+
+    // 52 Wochen × 7 Tage Grid
+    final rows = <Widget>[];
+    int dayIdx = 0;
+    for (int week = 0; week < 52; week++) {
+      final cells = <Widget>[];
+      for (int dow = 0; dow < 7; dow++) {
+        final dt = startDate.add(Duration(days: dayIdx));
+        dayIdx++;
+        if (dt.isAfter(endDate)) {
+          cells.add(const SizedBox(width: 12, height: 12));
+          continue;
+        }
+        final key = dt.millisecondsSinceEpoch ~/ Duration.millisecondsPerDay;
+        final count = _dailyCounts[key] ?? 0;
+        final intensity = maxCount > 1 ? (count / maxCount) : count;
+        final green = (0.15 + intensity * 0.85 * 255).round();
+        cells.add(Container(
+          width: 12, height: 12,
+          decoration: BoxDecoration(
+            color: count == 0
+                ? Theme.of(context).colorScheme.surfaceContainerHighest
+                : Color.fromARGB(255, 35, green.clamp(0, 255), 35),
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ));
+      }
+      rows.add(Row(mainAxisSize: MainAxisSize.min, children: cells));
+    }
+
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text(l10n.statsHeatmap, style: Theme.of(context).textTheme.titleSmall),
+        const SizedBox(height: 4),
+        Wrap(
+          spacing: 2,
+          children: [
+            Text('0', style: Theme.of(context).textTheme.bodySmall),
+            Container(width: 12, height: 12, color: Theme.of(context).colorScheme.surfaceContainerHighest),
+            Container(width: 12, height: 12, color: Color.fromARGB(255, 35, 60, 35)),
+            Container(width: 12, height: 12, color: Color.fromARGB(255, 35, 150, 35)),
+            Container(width: 12, height: 12, color: Color.fromARGB(255, 35, 220, 35)),
+            Text('$maxCount', style: Theme.of(context).textTheme.bodySmall),
+          ],
+        ),
+        const SizedBox(height: 8),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(4),
+          child: SizedBox(
+            width: 7 * 12 + 16,
+            height: 52 * 12 + 16,
+            child: Padding(
+              padding: EdgeInsets.all(8),
+              child: Column(children: rows),
+            ),
+          ),
+        ),
+      ]),
     );
   }
 

@@ -243,6 +243,9 @@
   "statsNoData": "No data available",
   "statsError": "Failed to load statistics",
 
+  "statsHeatmap": "Activity (last 365 days)",
+  "statsHeatmapHelper": "More tasks completed = darker green",
+
   "noDate": "No date",
 
   "reschedule": "Reschedule",

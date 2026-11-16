@@ -11,7 +11,7 @@ class TaskDto extends Dto<Task> {
   final int? parentTaskId, priority, bucketId;
   final int? projectId;
   final DateTime created, updated;
-  DateTime? dueDate, startDate, endDate;
+  DateTime? dueDate, startDate, endDate, doneAt;
   final List<TaskReminderDto> reminderDates;
   final String identifier;
   final String title, description;
@@ -35,6 +35,7 @@ class TaskDto extends Dto<Task> {
     this.dueDate,
     this.startDate,
     this.endDate,
+    this.doneAt,
     this.parentTaskId,
     this.priority,
     this.repeatAfter,
@@ -66,6 +67,9 @@ class TaskDto extends Dto<Task> {
       dueDate = DateTime.parse(json['due_date']),
       startDate = DateTime.parse(json['start_date']),
       endDate = DateTime.parse(json['end_date']),
+      doneAt = json['done_at'] != null
+          ? DateTime.parse(json['done_at'])
+          : null,
       parentTaskId = json['parent_task_id'],
       priority = json['priority'],
       repeatAfter = Duration(seconds: json['repeat_after']),
@@ -111,6 +115,7 @@ class TaskDto extends Dto<Task> {
     'due_date': dueDate?.toUtc().toIso8601String(),
     'start_date': startDate?.toUtc().toIso8601String(),
     'end_date': endDate?.toUtc().toIso8601String(),
+    'done_at': doneAt?.toUtc().toIso8601String(),
     'priority': priority,
     'repeat_after': repeatAfter?.inSeconds,
     'hex_color': color
@@ -141,6 +146,7 @@ class TaskDto extends Dto<Task> {
     done: done,
     reminderDates: reminderDates.map((e) => e.toDomain()).toList(),
     dueDate: dueDate,
+    doneAt: doneAt,
     startDate: startDate,
     endDate: endDate,
     parentTaskId: parentTaskId,
@@ -169,6 +175,7 @@ class TaskDto extends Dto<Task> {
         .map((e) => TaskReminderDto.fromDomain(e))
         .toList(),
     dueDate: b.dueDate,
+    doneAt: b.doneAt,
     startDate: b.startDate,
     endDate: b.endDate,
     parentTaskId: b.parentTaskId,

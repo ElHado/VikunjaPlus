@@ -11,7 +11,7 @@ class Task {
   int? projectId;
   Project? project;
   DateTime created, updated;
-  DateTime? dueDate, startDate, endDate;
+  DateTime? dueDate, startDate, endDate, doneAt;
   List<TaskReminder> reminderDates;
   String identifier;
   String title, description;
@@ -35,6 +35,7 @@ class Task {
     this.dueDate,
     this.startDate,
     this.endDate,
+    this.doneAt,
     this.parentTaskId,
     this.priority,
     this.repeatAfter,
@@ -79,6 +80,7 @@ class Task {
     DateTime? dueDate,
     DateTime? startDate,
     DateTime? endDate,
+    DateTime? doneAt,
     List<TaskReminder>? reminderDates,
     String? title,
     String? description,
@@ -104,6 +106,7 @@ class Task {
       dueDate: dueDate ?? this.dueDate,
       startDate: startDate ?? this.startDate,
       endDate: endDate ?? this.endDate,
+      doneAt: doneAt ?? this.doneAt,
       reminderDates: reminderDates ?? this.reminderDates,
       title: title ?? this.title,
       description: description ?? this.description,
