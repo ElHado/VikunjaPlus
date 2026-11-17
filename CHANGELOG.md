@@ -4,6 +4,21 @@ All notable changes to the **Vikunja+** project will be documented in this file.
 
 ---
 
+## [0.56.0] - 2026-10-28
+
+### Added
+* **GitHub-Style Contribution Heatmap:** New contribution graph in Task Analytics showing the last 365 days. Each cell represents a day, with color intensity indicating completed tasks. Scrollable horizontally with positioned month labels.
+* **doneAt Field:** Added support for the `done_at` timestamp from the Vikunja API, tracking when tasks were completed for more accurate analytics.
+
+### Changed
+* **Heatmap Layout:** Contribution grid now uses 7 rows (Mon–Sun) × 52 columns (weeks), growing from left (past) to right (present). Empty days are transparent to reduce visual clutter.
+
+### Fixed
+* **Month Label Positioning:** Month labels are now correctly aligned over their respective grid columns instead of hardcoded.
+* **Layout Overflow:** Fixed `RenderFlex overflow` by constraining row height to 12px and reducing day label font size.
+
+---
+
 ## [0.55.0] - 2026-10-28
 
 ### Added

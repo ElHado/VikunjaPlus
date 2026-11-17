@@ -201,9 +201,9 @@ class _TaskStatsPageState extends ConsumerState<TaskStatsPage> {
       // Erledigte Tasks (in-memory gefiltert)
       final doneTasks = filteredTasks.where((t) => t.done).toList();
 
-      // Tägliche Erledigungszahlen für Heatmap (letzte 365 Tage)
+      // Tägliche Erledigungszahlen für Heatmap (immer letzte 365 Tage, unabhängig vom Filter)
       final dailyCounts = <int, int>{};
-      for (final t in doneTasks) {
+      for (final t in allTasks.where((t) => t.done)) {
         final day = t.doneAt ?? t.dueDate;
         if (day == null) continue;
         final diff = DateTime.now().difference(day).inDays;
@@ -504,14 +504,16 @@ class _TaskStatsPageState extends ConsumerState<TaskStatsPage> {
       if (c > maxCount) maxCount = c;
     }
 
-    // 52 Wochen × 7 Tage Grid
+    // 7 Zeilen (Mo-So) × 52 Spalten (Wochen, links=alt, rechts=neu)
+    const dayLabels = ['', 'M', '', 'M', '', 'F', ''];
     final rows = <Widget>[];
-    int dayIdx = 0;
-    for (int week = 0; week < 52; week++) {
+    // für jeden Wochentag eine Zeile
+    for (int dow = 0; dow < 7; dow++) {
       final cells = <Widget>[];
-      for (int dow = 0; dow < 7; dow++) {
-        final dt = startDate.add(Duration(days: dayIdx));
-        dayIdx++;
+      // Tage durchgehen, jeder Tag ist genau einer Spalte (Woche) zugeordnet
+      for (int week = 0; week < 52; week++) {
+        final dayNum = week * 7 + dow;
+        final dt = startDate.add(Duration(days: dayNum));
         if (dt.isAfter(endDate)) {
           cells.add(const SizedBox(width: 12, height: 12));
           continue;
@@ -524,44 +526,103 @@ class _TaskStatsPageState extends ConsumerState<TaskStatsPage> {
           width: 12, height: 12,
           decoration: BoxDecoration(
             color: count == 0
-                ? Theme.of(context).colorScheme.surfaceContainerHighest
+                ? Colors.transparent
                 : Color.fromARGB(255, 35, green.clamp(0, 255), 35),
             borderRadius: BorderRadius.circular(2),
           ),
         ));
       }
-      rows.add(Row(mainAxisSize: MainAxisSize.min, children: cells));
-    }
-
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(l10n.statsHeatmap, style: Theme.of(context).textTheme.titleSmall),
-        const SizedBox(height: 4),
-        Wrap(
-          spacing: 2,
+      rows.add(SizedBox(
+        height: 12,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text('0', style: Theme.of(context).textTheme.bodySmall),
-            Container(width: 12, height: 12, color: Theme.of(context).colorScheme.surfaceContainerHighest),
-            Container(width: 12, height: 12, color: Color.fromARGB(255, 35, 60, 35)),
-            Container(width: 12, height: 12, color: Color.fromARGB(255, 35, 150, 35)),
-            Container(width: 12, height: 12, color: Color.fromARGB(255, 35, 220, 35)),
-            Text('$maxCount', style: Theme.of(context).textTheme.bodySmall),
+            SizedBox(
+              width: 14,
+              child: Text(dayLabels[dow], style: Theme.of(context).textTheme.bodySmall?.copyWith(fontSize: 9)),
+            ),
+            ...cells,
           ],
         ),
-        const SizedBox(height: 8),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(4),
-          child: SizedBox(
-            width: 7 * 12 + 16,
-            height: 52 * 12 + 16,
-            child: Padding(
-              padding: EdgeInsets.all(8),
-              child: Column(children: rows),
+      ));
+    }
+
+    return SizedBox(
+      height: 180,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(l10n.statsHeatmap, style: Theme.of(context).textTheme.titleSmall),
+          const SizedBox(height: 4),
+          Wrap(
+            spacing: 2,
+            children: [
+              Text('0', style: Theme.of(context).textTheme.bodySmall),
+              Container(width: 12, height: 12, color: Colors.transparent),
+              Container(width: 12, height: 12, color: Color.fromARGB(255, 35, 60, 35)),
+              Container(width: 12, height: 12, color: Color.fromARGB(255, 35, 150, 35)),
+              Container(width: 12, height: 12, color: Color.fromARGB(255, 35, 220, 35)),
+              Text('$maxCount', style: Theme.of(context).textTheme.bodySmall),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Expanded(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(4),
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: [
+                  SizedBox(
+                    height: 120,
+                    child: Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(height: 12, child: _buildMonthLabels()),
+                          const SizedBox(height: 4),
+                          Column(children: rows),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMonthLabels() {
+    final labels = <Widget>[];
+    final startDate = DateTime.now().subtract(Duration(days: 363));
+    int year = DateTime.now().year;
+    int prevMonth = DateTime.now().month;
+    for (int m = 0; m < 12; m++) {
+      int month = (DateTime.now().month - 1 - m + 12) % 12 + 1;
+      // Jahr wechseln wenn wir von Januar zurück zu Dezember gehen
+      if (m > 0 && month > prevMonth) year -= 1;
+      prevMonth = month;
+
+      final firstAt = DateTime(year, month, 1);
+      final diff = firstAt.difference(startDate).inDays;
+      if (diff < 0 || diff > 363) continue;
+
+      final weekPos = diff ~/ 7;
+      labels.add(Positioned(
+        left: 14 + weekPos * 12.0,
+        top: 0,
+        child: Text(
+          ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'][month - 1],
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(fontSize: 9),
         ),
-      ]),
+      ));
+    }
+    return SizedBox(
+      width: 52 * 12 + 14,
+      child: Stack(children: labels),
     );
   }
 
